@@ -1,4 +1,6 @@
 import { useAuth } from '@/hooks/useAuth'
+import { Box } from '@mui/material'
+import { Fragment } from 'react'
 import { Navigate, useOutlet } from 'react-router-dom'
 
 export const PublicLayout = () => {
@@ -9,5 +11,5 @@ export const PublicLayout = () => {
     return <Navigate to='/' replace />
   }
 
-  return <div>{outlet}</div>
+  return <Box sx={{ width: '100vw', height: '100vh' }}>{outlet}</Box>
 }

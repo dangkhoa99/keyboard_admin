@@ -1,6 +1,7 @@
 import { AuthContext } from '@/context/AuthContext'
 import { Fragment, useContext } from 'react'
 import { Navigate, useOutlet } from 'react-router-dom'
+import MainWrapper from './MainWrapper'
 
 export const MainLayout = () => {
   const { authenticated } = useContext(AuthContext)
@@ -11,5 +12,5 @@ export const MainLayout = () => {
     return <Navigate to='/login' />
   }
 
-  return <Fragment>{outlet}</Fragment>
+  return <MainWrapper>{outlet}</MainWrapper>
 }

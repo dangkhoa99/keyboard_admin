@@ -1,31 +1,13 @@
-*,
-::before,
-::after {
+* {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
-html {
-  height: 100vh;
-}
-
 body {
-  height: 100vh;
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-#root {
-  width: 100vw;
-  height: 100vh;
-  -webkit-tap-highlight-color: transparent;
-}
-
-ol,
-ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
 }
 
 ::-webkit-scrollbar {
@@ -40,17 +22,11 @@ ul {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.05) !important;
+  background: rgba(0, 0, 0, 0.2) !important;
   border-radius: 100px !important;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.1);
-}
-
-.prevent-select {
-  -webkit-user-select: none; /* Safari */
-  -ms-user-select: none; /* IE 10 and IE 11 */
-  user-select: none; /* Standard syntax */
 }

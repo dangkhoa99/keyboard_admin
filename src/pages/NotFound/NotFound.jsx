@@ -6,11 +6,7 @@ const NotFound = () => {
   const navigate = useNavigate()
 
   return (
-    <Grid
-      container
-      alignContent='center'
-      rowSpacing={4}
-      sx={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
+    <Grid container alignContent='center' gap={4} sx={{ height: '100vh' }}>
       <Grid item xs={12}>
         <Typography variant='h1' fontWeight='900'>
           404

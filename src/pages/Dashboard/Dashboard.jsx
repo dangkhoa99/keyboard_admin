@@ -1,22 +1,15 @@
 import { useAuth } from '@/hooks/useAuth'
-import { Button } from '@mui/material'
+import { Box, Button } from '@mui/material'
 import { Fragment } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const Dashboard = () => {
-  const { logout } = useAuth()
-  const navigate = useNavigate()
-
   return (
-    <Fragment>
-      Dashboard Page
-      <Button variant='contained' onClick={logout}>
-        Logout
-      </Button>
-      <Button variant='outlined' onClick={() => navigate('/product')}>
-        Product Page
-      </Button>
-    </Fragment>
+    <Box sx={{ width: '100%', height: '100%', overflow: 'auto' }}>
+      {[...new Array(30)].map((item, index) => (
+        <h1 key={index}>Dashboard Page {index + 1}</h1>
+      ))}
+    </Box>
   )
 }
 
