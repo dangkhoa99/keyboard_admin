@@ -2,12 +2,12 @@ import { BASE_URL, RestEndpoints } from '@/common/constants'
 import { loadLS, removeLS, saveLS } from '@/common/utils'
 import { AuthContext } from '@/context/AuthContext'
 import axios from 'axios'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate()
-  const [authenticated, setAuthenticated] = useState(false)
+  const [authenticated, setAuthenticated] = useState(() => loadLS('token'))
 
   const login = (data) => {
     axios({
@@ -18,11 +18,11 @@ export const AuthProvider = ({ children }) => {
     })
       .then((res) => {
         if (res.data) {
-          saveLS('token', res.data.token)
+          const token = saveLS('token', res.data.token)
 
-          setAuthenticated(true)
+          setAuthenticated(token)
 
-          navigate('/', { replace: true })
+          navigate('/dashboard', { replace: true })
         }
       })
       .catch((err) => {
@@ -45,16 +45,6 @@ export const AuthProvider = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [authenticated],
   )
-
-  useEffect(() => {
-    const token = loadLS('token')
-
-    if (token) {
-      setAuthenticated(true)
-    }
-
-    return () => {}
-  }, [])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

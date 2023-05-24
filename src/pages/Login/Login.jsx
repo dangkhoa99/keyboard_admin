@@ -1,10 +1,9 @@
 import { useAuth } from '@/hooks/useAuth'
 import { Box, Button, Grid, TextField } from '@mui/material'
 import { useState } from 'react'
-import { Navigate } from 'react-router-dom'
 
 const Login = () => {
-  const { authenticated, login } = useAuth()
+  const { login } = useAuth()
 
   const [formValue, setFormValue] = useState({ username: '', password: '' })
 
@@ -19,10 +18,6 @@ const Login = () => {
     console.log('Login: ', formValue)
 
     login(formValue)
-  }
-
-  if (authenticated) {
-    return <Navigate to='/' replace />
   }
 
   return (
