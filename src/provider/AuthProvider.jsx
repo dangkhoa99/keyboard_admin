@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
 
           setAuthenticated(token)
 
-          navigate('/dashboard', { replace: true })
+          navigate('/', { replace: true })
         }
       })
       .catch((err) => {

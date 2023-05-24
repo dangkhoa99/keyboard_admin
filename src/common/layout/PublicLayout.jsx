@@ -6,7 +6,7 @@ export const PublicLayout = () => {
   const outlet = useOutlet()
 
   if (authenticated) {
-    return <Navigate to='/dashboard' replace />
+    return <Navigate to='/' replace />
   }
 
   return <div>{outlet}</div>
