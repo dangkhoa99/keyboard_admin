@@ -5,6 +5,7 @@ import KeyboardIcon from '@mui/icons-material/Keyboard'
 import MenuIcon from '@mui/icons-material/Menu'
 import PersonIcon from '@mui/icons-material/Person'
 import ReceiptIcon from '@mui/icons-material/Receipt'
+import CategoryIcon from '@mui/icons-material/Category'
 import {
   Box,
   Button,
@@ -28,9 +29,10 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 const MENU = [
   { id: '1', name: 'Dashboard', icon: <DashboardIcon />, link: '/' },
-  { id: '2', name: 'Product', icon: <KeyboardIcon />, link: '/product' },
-  { id: '3', name: 'User', icon: <PersonIcon />, link: '/user' },
-  { id: '4', name: 'Order', icon: <ReceiptIcon />, link: '/order' },
+  { id: '2', name: 'Category', icon: <CategoryIcon />, link: '/categories' },
+  { id: '3', name: 'Product', icon: <KeyboardIcon />, link: '/products' },
+  { id: '4', name: 'User', icon: <PersonIcon />, link: '/users' },
+  { id: '5', name: 'Order', icon: <ReceiptIcon />, link: '/orders' },
 ]
 
 const drawerWidth = 240

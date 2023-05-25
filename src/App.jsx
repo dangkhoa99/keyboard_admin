@@ -1,5 +1,11 @@
 import { MainLayout } from '@/common/layout/MainLayout'
 import { PublicLayout } from '@/common/layout/PublicLayout'
+import {
+  Category,
+  CategoryCreate,
+  CategoryDetail,
+  CategoryUpdate,
+} from '@/pages/Category'
 import Dashboard from '@/pages/Dashboard/Dashboard'
 import Login from '@/pages/Login/Login'
 import NotFound from '@/pages/NotFound/NotFound'
@@ -28,9 +34,13 @@ const App = () => {
 
             <Route path='/' element={<MainLayout />}>
               <Route path='' element={<Dashboard />} />
-              <Route path='product' element={<Product />} />
-              <Route path='user' element={<User />} />
-              <Route path='order' element={<Order />} />
+              <Route path='categories' element={<Category />} />
+              <Route path='categories/new' element={<CategoryCreate />} />
+              <Route path='categories/:id/show' element={<CategoryDetail />} />
+              <Route path='categories/:id/edit' element={<CategoryUpdate />} />
+              <Route path='products' element={<Product />} />
+              <Route path='users' element={<User />} />
+              <Route path='orders' element={<Order />} />
             </Route>
           </Routes>
         </AuthProvider>
