@@ -5,16 +5,19 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import { Box, Button, Grid, IconButton, Tooltip } from '@mui/material'
 import axios from 'axios'
+import isEmpty from 'lodash/isEmpty'
 import MaterialReactTable from 'material-react-table'
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { useSnackbar } from 'notistack'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BasicModal from './BasicModal'
-import { useSnackbar } from 'notistack'
 
 const Table = ({ url = '', columns = [], keyDelete = '_id' }) => {
   const { enqueueSnackbar } = useSnackbar()
   const navigate = useNavigate()
+  const tableInstanceRef = useRef(null)
   const token = useMemo(() => loadLS('token'), [])
+  const [rowSelection, setRowSelection] = useState({})
   const [refetchDataTable, setRefetchDataTable] = useState(0)
 
   const [data, setData] = useState({
@@ -22,7 +25,7 @@ const Table = ({ url = '', columns = [], keyDelete = '_id' }) => {
     isLoading: false,
   })
 
-  const handleDeleteItem = useCallback((id) => {
+  const handleDeleteItem = useCallback(({ id, isMany = false }) => {
     if (!token) {
       return
     }
@@ -36,13 +39,35 @@ const Table = ({ url = '', columns = [], keyDelete = '_id' }) => {
       url: `${BASE_URL}/${url}/${id}`,
     })
       .then((res) => {
-        console.log(`[DELETE] [${url}]: >>`, res.data)
-        setRefetchDataTable((prev) => prev + 1)
-        enqueueSnackbar('Delete Success', { variant: 'success' })
+        // console.log(`[DELETE] [${url}]: >>`, res.data)
+
+        if (!isMany) {
+          setRefetchDataTable((prev) => prev + 1)
+          enqueueSnackbar('Delete Success', { variant: 'success' })
+        }
       })
       .catch((err) => {
         console.error(`[ERROR - DELETE] [${url}]: >>`, err)
       })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const handleDeleteItems = useCallback(() => {
+    const arrIds = tableInstanceRef.current?.getSelectedRowModel().flatRows
+
+    arrIds.forEach((item) => {
+      handleDeleteItem({ id: item.id, isMany: true })
+    })
+
+    setRefetchDataTable((prev) => prev + 1)
+    enqueueSnackbar(
+      `Delete ${
+        tableInstanceRef.current?.getSelectedRowModel().flatRows.length
+      } Items Success`,
+      { variant: 'success' },
+    )
+
+    tableInstanceRef.current?.resetRowSelection()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -74,9 +99,16 @@ const Table = ({ url = '', columns = [], keyDelete = '_id' }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetchDataTable])
 
+  useEffect(() => {
+    tableInstanceRef.current?.setRowSelection(rowSelection)
+
+    return () => {}
+  }, [rowSelection])
+
   return (
     <Grid container justifyContent='center' sx={{ width: '100%' }}>
       <MaterialReactTable
+        tableInstanceRef={tableInstanceRef}
         getRowId={(originalRow, index) => originalRow?._id || index}
         columns={columns}
         data={data.list}
@@ -90,7 +122,8 @@ const Table = ({ url = '', columns = [], keyDelete = '_id' }) => {
         enableStickyFooter
         enablePinning
         initialState={{ density: 'comfortable' }}
-        state={{ isLoading: data.isLoading }}
+        state={{ isLoading: data.isLoading, rowSelection }}
+        onRowSelectionChange={setRowSelection}
         positionToolbarAlertBanner='bottom'
         renderRowActions={({ row, table }) => (
           <Box
@@ -117,13 +150,13 @@ const Table = ({ url = '', columns = [], keyDelete = '_id' }) => {
             <BasicModal
               modalTitle='Are you sure you want to delete this item?'
               modalContent={`Item: ${row?.original?.[keyDelete]}`}
-              modalActionFunc={() => handleDeleteItem(row.id)}
+              modalActionFunc={() => handleDeleteItem({ id: row.id })}
               btnLayout={(props) => (
                 <Tooltip arrow placement='right' title='Delete'>
                   <IconButton
                     color='error'
                     onClick={() => {
-                      console.log('[CLICK] [DELETE]: >>', row)
+                      // console.log('[CLICK] [DELETE]: >>', row)
                       props?.openModal?.()
                     }}>
                     <Delete />
@@ -147,20 +180,34 @@ const Table = ({ url = '', columns = [], keyDelete = '_id' }) => {
               color='primary'
               startIcon={<AddCircleOutlineIcon />}
               onClick={() => navigate('./new')}
-              sx={{ fontWeight: '900', minWidth: '100px' }}>
+              sx={{ fontWeight: '900', minWidth: '150px' }}>
               New
             </Button>
 
-            <Button
-              disabled
-              disableElevation
-              variant='outlined'
-              color='error'
-              startIcon={<Delete />}
-              onClick={() => console.log('[CLICK] [DELETE MANY] : ')}
-              sx={{ fontWeight: '900', minWidth: '100px' }}>
-              Delete
-            </Button>
+            <BasicModal
+              modalTitle='Are you sure you want to delete some items?'
+              modalContent={'Items:'}
+              modalContentArr={tableInstanceRef.current
+                ?.getSelectedRowModel()
+                .flatRows.map((item) => item?.original?.[keyDelete])}
+              modalActionFunc={handleDeleteItems}
+              btnLayout={(props) => (
+                <Button
+                  disabled={isEmpty(rowSelection)}
+                  disableElevation
+                  variant='outlined'
+                  color='error'
+                  startIcon={<Delete />}
+                  onClick={() => props?.openModal?.()}
+                  sx={{ fontWeight: '900', minWidth: '150px' }}>
+                  Delete{' '}
+                  {`(${
+                    tableInstanceRef.current?.getSelectedRowModel().flatRows
+                      .length ?? 0
+                  })`}
+                </Button>
+              )}
+            />
           </Box>
         )}
         displayColumnDefOptions={{
