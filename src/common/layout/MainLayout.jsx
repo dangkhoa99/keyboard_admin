@@ -3,7 +3,7 @@ import { Navigate, useOutlet } from 'react-router-dom'
 import MainWrapper from './MainWrapper'
 import { useEffect } from 'react'
 
-export const MainLayout = () => {
+const MainLayout = () => {
   const { authenticated, checkAuth } = useAuth()
 
   const outlet = useOutlet()
@@ -21,3 +21,5 @@ export const MainLayout = () => {
 
   return <MainWrapper>{outlet}</MainWrapper>
 }
+
+export default MainLayout

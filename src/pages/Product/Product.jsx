@@ -71,7 +71,7 @@ const Product = () => {
         ),
       },
       {
-        accessorKey: 'category',
+        accessorKey: 'category.name',
         header: 'Category',
         size: 160,
       },

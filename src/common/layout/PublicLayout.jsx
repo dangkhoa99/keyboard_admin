@@ -3,7 +3,7 @@ import { Box } from '@mui/material'
 import { Fragment } from 'react'
 import { Navigate, useOutlet } from 'react-router-dom'
 
-export const PublicLayout = () => {
+const PublicLayout = () => {
   const { authenticated } = useAuth()
   const outlet = useOutlet()
 
@@ -13,3 +13,5 @@ export const PublicLayout = () => {
 
   return <Box sx={{ width: '100vw', height: '100vh' }}>{outlet}</Box>
 }
+
+export default PublicLayout

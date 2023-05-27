@@ -1,5 +1,4 @@
-import { MainLayout } from '@/common/layout/MainLayout'
-import { PublicLayout } from '@/common/layout/PublicLayout'
+import { MainLayout, PublicLayout } from '@/common/layout'
 import {
   Category,
   CategoryCreate,
@@ -10,41 +9,66 @@ import Dashboard from '@/pages/Dashboard/Dashboard'
 import Login from '@/pages/Login/Login'
 import NotFound from '@/pages/NotFound/NotFound'
 import Order from '@/pages/Order/Order'
-import Product from '@/pages/Product/Product'
-import User from '@/pages/User/User'
+import {
+  Product,
+  ProductCreate,
+  ProductDetail,
+  ProductUpdate,
+} from '@/pages/Product'
+import { User, UserCreate, UserDetail, UserUpdate } from '@/pages/User'
 import { AuthProvider } from '@/provider/AuthProvider'
 import { lightTheme } from '@/themes'
 import '@/themes/styles/App.css'
 import { ThemeProvider } from '@emotion/react'
 import { CssBaseline } from '@mui/material'
+import { SnackbarProvider } from 'notistack'
 import { Route, Routes } from 'react-router-dom'
 
 const App = () => {
   return (
     <ThemeProvider theme={lightTheme}>
       <CssBaseline />
-      <div className='App'>
-        <AuthProvider>
-          <Routes>
-            <Route path='*' element={<NotFound />} />
 
-            <Route element={<PublicLayout />}>
-              <Route path='/login' element={<Login />} />
-            </Route>
+      <SnackbarProvider
+        dense
+        preventDuplicate
+        autoHideDuration={3000}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
+        <div className='App'>
+          <AuthProvider>
+            <Routes>
+              <Route path='*' element={<NotFound />} />
 
-            <Route path='/' element={<MainLayout />}>
-              <Route path='' element={<Dashboard />} />
-              <Route path='categories' element={<Category />} />
-              <Route path='categories/new' element={<CategoryCreate />} />
-              <Route path='categories/:id/show' element={<CategoryDetail />} />
-              <Route path='categories/:id/edit' element={<CategoryUpdate />} />
-              <Route path='products' element={<Product />} />
-              <Route path='users' element={<User />} />
-              <Route path='orders' element={<Order />} />
-            </Route>
-          </Routes>
-        </AuthProvider>
-      </div>
+              <Route element={<PublicLayout />}>
+                <Route path='/login' element={<Login />} />
+              </Route>
+
+              <Route path='/' element={<MainLayout />}>
+                <Route path='' element={<Dashboard />} />
+                <Route path='categories' element={<Category />} />
+                <Route path='categories/new' element={<CategoryCreate />} />
+                <Route
+                  path='categories/:id/show'
+                  element={<CategoryDetail />}
+                />
+                <Route
+                  path='categories/:id/edit'
+                  element={<CategoryUpdate />}
+                />
+                <Route path='products' element={<Product />} />
+                <Route path='products/new' element={<ProductCreate />} />
+                <Route path='products/:id/show' element={<ProductDetail />} />
+                <Route path='products/:id/edit' element={<ProductUpdate />} />
+                <Route path='users' element={<User />} />
+                <Route path='users/new' element={<UserCreate />} />
+                <Route path='users/:id/show' element={<UserDetail />} />
+                <Route path='users/:id/edit' element={<UserUpdate />} />
+                <Route path='orders' element={<Order />} />
+              </Route>
+            </Routes>
+          </AuthProvider>
+        </div>
+      </SnackbarProvider>
     </ThemeProvider>
   )
 }
