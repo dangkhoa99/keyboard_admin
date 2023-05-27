@@ -7,6 +7,7 @@ export const Routes = {
 export const RestEndpoints = {
   AUTH: 'auth',
   LOGIN: 'auth/signIn',
+  WHO_AM_I: 'auth/whoAmI',
   USER: 'users',
   PRODUCT: 'products',
   CATEGORY: 'categories',

@@ -35,12 +35,12 @@ const Table = ({ url = '', columns = [] }) => {
       url: `${BASE_URL}/${url}`,
     })
       .then((res) => {
-        console.log(`[GET] [${url}]: ${res.data}`)
+        console.log(`[GET] [${url}]: >>`, res.data)
 
         setData({ list: res.data, isLoading: false })
       })
       .catch((err) => {
-        console.error(`[ERROR - GET] [${url}]: ${err}`)
+        console.error(`[ERROR - GET] [${url}]: >>`, err)
       })
 
     return () => {}
@@ -48,7 +48,7 @@ const Table = ({ url = '', columns = [] }) => {
   }, [])
 
   return (
-    <Grid container justifyContent='center' sx={{ width: '100%', p: 2 }}>
+    <Grid container justifyContent='center' sx={{ width: '100%' }}>
       <MaterialReactTable
         getRowId={(originalRow, index) => originalRow?._id || index}
         columns={columns}

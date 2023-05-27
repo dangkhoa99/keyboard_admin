@@ -1,4 +1,3 @@
-import { useAuth } from '@/hooks/useAuth'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import KeyboardIcon from '@mui/icons-material/Keyboard'
@@ -7,9 +6,8 @@ import PersonIcon from '@mui/icons-material/Person'
 import ReceiptIcon from '@mui/icons-material/Receipt'
 import CategoryIcon from '@mui/icons-material/Category'
 import {
+  Avatar,
   Box,
-  Button,
-  Divider,
   IconButton,
   List,
   ListItem,
@@ -18,14 +16,19 @@ import {
   ListItemText,
   AppBar as MuiAppBar,
   Drawer as MuiDrawer,
+  Skeleton,
   Stack,
   Toolbar,
   Tooltip,
   Typography,
+  styled,
 } from '@mui/material'
-import { styled } from '@mui/material/styles'
-import * as React from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { Fragment, useCallback, useEffect, useState } from 'react'
+import axios from 'axios'
+import { BASE_URL, RestEndpoints } from '../constants'
+import { loadLS } from '../utils'
+import LogoutBtn from '../components/LogoutBtn'
 
 const MENU = [
   { id: '1', name: 'Dashboard', icon: <DashboardIcon />, link: '/' },
@@ -78,7 +81,7 @@ const AppBar = styled(MuiAppBar, {
   }),
   ...(open && {
     marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
+    width: '100%',
     transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
@@ -104,19 +107,52 @@ const Drawer = styled(MuiDrawer, {
   }),
 }))
 
-export default function MiniDrawer({ children }) {
-  const { logout } = useAuth()
+const MiniDrawer = ({ children }) => {
   const navigate = useNavigate()
   const location = useLocation()
-  const [open, setOpen] = React.useState(true)
+  const [open, setOpen] = useState(true)
+  const [userInfo, setUserInfo] = useState({
+    data: {
+      id: '',
+      role: '',
+      username: '',
+      name: '',
+    },
+    isLoading: false,
+  })
 
-  const handleDrawerOpen = () => {
-    setOpen(true)
-  }
+  const toggleDrawer = useCallback(() => {
+    setOpen(!open)
+  }, [open])
 
-  const handleDrawerClose = () => {
-    setOpen(false)
-  }
+  useEffect(() => {
+    const token = loadLS('token')
+
+    if (!token) {
+      return
+    }
+
+    setUserInfo((prev) => ({ ...prev, isLoading: true }))
+
+    axios({
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `${token?.type} ${token?.value}`,
+      },
+      url: `${BASE_URL}/${RestEndpoints.WHO_AM_I}`,
+    })
+      .then((res) => {
+        if (res.data) {
+          setUserInfo({ data: res.data, isLoading: false })
+        }
+      })
+      .catch((err) => {
+        console.error('Login: ', err)
+      })
+
+    return () => {}
+  }, [])
 
   return (
     <Box sx={{ display: 'flex', width: '100%', height: '100%' }}>
@@ -128,19 +164,18 @@ export default function MiniDrawer({ children }) {
           <Stack
             flexDirection='row'
             alignItems='center'
-            gap={2}
+            gap={4}
             sx={{ width: '100%' }}>
-            <IconButton
-              color='inherit'
-              aria-label='open drawer'
-              onClick={handleDrawerOpen}
-              edge='start'
-              sx={{
-                marginRight: 5,
-                ...(open && { display: 'none' }),
-              }}>
-              <MenuIcon />
-            </IconButton>
+            <Tooltip placement='right' title={open ? 'Close' : 'Open'}>
+              <IconButton
+                color='inherit'
+                aria-label={open ? 'open drawer' : 'close drawer'}
+                onClick={toggleDrawer}
+                edge='start'
+                sx={{ marginRight: 5 }}>
+                {!open ? <MenuIcon /> : <ChevronLeftIcon />}
+              </IconButton>
+            </Tooltip>
 
             <Typography
               variant='h6'
@@ -150,27 +185,34 @@ export default function MiniDrawer({ children }) {
               {`Khoa's Store`}
             </Typography>
 
-            <Button
-              disableElevation
-              variant='text'
-              onClick={logout}
-              color='inherit'
-              size='large'
-              sx={{ fontWeight: 900 }}>
-              Logout
-            </Button>
+            <Stack direction='row' alignItems='center' gap={2}>
+              {userInfo.isLoading ? (
+                <Skeleton width='100px' />
+              ) : (
+                <Fragment>
+                  <Avatar
+                    sx={{
+                      backgroundColor: 'secondary.main',
+                      border: '4px solid #fff',
+                      fontWeight: '900',
+                    }}>
+                    {userInfo.data.name.charAt(0).toUpperCase()}
+                  </Avatar>
+
+                  <Typography variant='h6' fontWeight='600'>
+                    {userInfo.data.name}
+                  </Typography>
+                </Fragment>
+              )}
+            </Stack>
+
+            <LogoutBtn />
           </Stack>
         </Toolbar>
       </AppBar>
 
       <Drawer variant='permanent' open={open}>
-        <DrawerHeader>
-          <IconButton onClick={handleDrawerClose}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </DrawerHeader>
-
-        <Divider />
+        <DrawerHeader />
 
         <List>
           {MENU.map((item, index) => (
@@ -220,9 +262,12 @@ export default function MiniDrawer({ children }) {
           display: 'flex',
           flexDirection: 'column',
           overflow: 'auto',
+          p: 2,
         }}>
         {children}
       </Box>
     </Box>
   )
 }
+
+export default MiniDrawer
