@@ -6,20 +6,47 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import { Box, Button, Grid, IconButton, Tooltip } from '@mui/material'
 import axios from 'axios'
 import MaterialReactTable from 'material-react-table'
-import { memo, useEffect, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import BasicModal from './BasicModal'
+import { useSnackbar } from 'notistack'
 
-const Table = ({ url = '', columns = [] }) => {
+const Table = ({ url = '', columns = [], keyDelete = '_id' }) => {
+  const { enqueueSnackbar } = useSnackbar()
   const navigate = useNavigate()
+  const token = useMemo(() => loadLS('token'), [])
+  const [refetchDataTable, setRefetchDataTable] = useState(0)
 
   const [data, setData] = useState({
     list: [],
     isLoading: false,
   })
 
-  useEffect(() => {
-    const token = loadLS('token')
+  const handleDeleteItem = useCallback((id) => {
+    if (!token) {
+      return
+    }
 
+    axios({
+      method: 'delete',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `${token?.type} ${token?.value}`,
+      },
+      url: `${BASE_URL}/${url}/${id}`,
+    })
+      .then((res) => {
+        console.log(`[DELETE] [${url}]: >>`, res.data)
+        setRefetchDataTable((prev) => prev + 1)
+        enqueueSnackbar('Delete Success', { variant: 'success' })
+      })
+      .catch((err) => {
+        console.error(`[ERROR - DELETE] [${url}]: >>`, err)
+      })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
     if (!token) {
       return
     }
@@ -35,7 +62,7 @@ const Table = ({ url = '', columns = [] }) => {
       url: `${BASE_URL}/${url}`,
     })
       .then((res) => {
-        console.log(`[GET] [${url}]: >>`, res.data)
+        // console.log(`[GET] [${url}]: >>`, res.data)
 
         setData({ list: res.data, isLoading: false })
       })
@@ -45,7 +72,7 @@ const Table = ({ url = '', columns = [] }) => {
 
     return () => {}
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [refetchDataTable])
 
   return (
     <Grid container justifyContent='center' sx={{ width: '100%' }}>
@@ -79,19 +106,31 @@ const Table = ({ url = '', columns = [] }) => {
               </IconButton>
             </Tooltip>
 
-            <Tooltip arrow placement='left' title='Edit'>
-              <IconButton onClick={() => navigate(`./${row.id}/edit`)}>
+            <Tooltip arrow placement='bottom' title='Edit'>
+              <IconButton
+                color='primary'
+                onClick={() => navigate(`./${row.id}/edit`)}>
                 <Edit />
               </IconButton>
             </Tooltip>
 
-            <Tooltip arrow placement='right' title='Delete'>
-              <IconButton
-                color='error'
-                onClick={() => console.log('[CLICK] [DELETE] : ', row)}>
-                <Delete />
-              </IconButton>
-            </Tooltip>
+            <BasicModal
+              modalTitle='Are you sure you want to delete this item?'
+              modalContent={`Item: ${row?.original?.[keyDelete]}`}
+              modalActionFunc={() => handleDeleteItem(row.id)}
+              btnLayout={(props) => (
+                <Tooltip arrow placement='right' title='Delete'>
+                  <IconButton
+                    color='error'
+                    onClick={() => {
+                      console.log('[CLICK] [DELETE]: >>', row)
+                      props?.openModal?.()
+                    }}>
+                    <Delete />
+                  </IconButton>
+                </Tooltip>
+              )}
+            />
           </Box>
         )}
         renderTopToolbarCustomActions={() => (
@@ -107,7 +146,8 @@ const Table = ({ url = '', columns = [] }) => {
               variant='outlined'
               color='primary'
               startIcon={<AddCircleOutlineIcon />}
-              onClick={() => navigate('./new')}>
+              onClick={() => navigate('./new')}
+              sx={{ fontWeight: '900', minWidth: '100px' }}>
               New
             </Button>
 
@@ -117,7 +157,8 @@ const Table = ({ url = '', columns = [] }) => {
               variant='outlined'
               color='error'
               startIcon={<Delete />}
-              onClick={() => console.log('[CLICK] [DELETE MANY] : ')}>
+              onClick={() => console.log('[CLICK] [DELETE MANY] : ')}
+              sx={{ fontWeight: '900', minWidth: '100px' }}>
               Delete
             </Button>
           </Box>
