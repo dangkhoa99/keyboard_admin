@@ -79,7 +79,9 @@ const Product = () => {
     [],
   )
 
-  return <Table url={RestEndpoints.PRODUCT} columns={columns} />
+  return (
+    <Table url={RestEndpoints.PRODUCT} columns={columns} keyDelete='name' />
+  )
 }
 
 export default Product
