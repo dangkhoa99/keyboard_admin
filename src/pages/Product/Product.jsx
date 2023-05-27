@@ -9,12 +9,12 @@ const Product = () => {
       {
         accessorKey: 'name',
         header: 'Name',
-        size: 160,
+        size: 320,
       },
       {
         accessorKey: 'description',
         header: 'Description',
-        size: 160,
+        size: 320,
       },
       {
         accessorKey: 'price',

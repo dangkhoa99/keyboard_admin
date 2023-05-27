@@ -64,7 +64,7 @@ const ProductUpdate = () => {
 
         setIsLoading(false)
         enqueueSnackbar('Update Product Success', { variant: 'success' })
-        // navigate(`/${Routes.PRODUCT}`)
+        navigate(`/${Routes.PRODUCT}`)
       })
       .catch((err) => {
         console.error(`[ERROR - UPDATE] [product]: >>`, err)

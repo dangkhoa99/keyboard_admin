@@ -6,14 +6,14 @@ const Category = () => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: '_id',
-        header: 'ID',
-        size: 160,
-      },
-      {
         accessorKey: 'name',
         header: 'Name',
         size: 160,
+      },
+      {
+        accessorKey: 'description',
+        header: 'Description',
+        size: 320,
       },
     ],
     [],
