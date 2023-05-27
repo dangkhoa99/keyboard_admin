@@ -19,7 +19,9 @@ const Category = () => {
     [],
   )
 
-  return <Table url={RestEndpoints.CATEGORY} columns={columns} />
+  return (
+    <Table url={RestEndpoints.CATEGORY} columns={columns} keyDelete='name' />
+  )
 }
 
 export default Category

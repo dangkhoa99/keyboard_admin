@@ -63,7 +63,9 @@ const User = () => {
     [],
   )
 
-  return <Table url={RestEndpoints.USER} columns={columns} />
+  return (
+    <Table url={RestEndpoints.USER} columns={columns} keyDelete='username' />
+  )
 }
 
 export default User
