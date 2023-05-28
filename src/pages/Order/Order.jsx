@@ -1,6 +1,6 @@
 import Table from '@/common/components/Table'
 import { RestEndpoints, StatusesColor } from '@/common/constants'
-import { Box, Typography } from '@mui/material'
+import { Box, Chip, Typography } from '@mui/material'
 import { useMemo } from 'react'
 
 const Order = () => {
@@ -57,18 +57,12 @@ const Order = () => {
           const value = cell.getValue()
 
           return (
-            <Box
-              sx={{
-                display: 'inline-block',
-                backgroundColor: value ? StatusesColor[value] : 'grey.300',
-                color: '#fff',
-                borderRadius: 1,
-                minWidth: '50px',
-                fontWeight: '900',
-                p: 1,
-              }}>
-              {value}
-            </Box>
+            <Chip
+              label={value}
+              size='small'
+              color={value ? StatusesColor[value] : 'default'}
+              sx={{ fontWeight: '900', minWidth: '100px' }}
+            />
           )
         },
       },

@@ -1,6 +1,6 @@
 import Table from '@/common/components/Table'
 import { RestEndpoints, RolesColor } from '@/common/constants'
-import { Box, Typography } from '@mui/material'
+import { Box, Chip, Typography } from '@mui/material'
 import { useMemo } from 'react'
 
 const User = () => {
@@ -41,18 +41,12 @@ const User = () => {
           const value = cell.getValue()?.split('-')[1]?.toUpperCase() ?? ''
 
           return (
-            <Box
-              sx={{
-                display: 'inline-block',
-                backgroundColor: value ? RolesColor[value] : 'grey.300',
-                color: '#fff',
-                borderRadius: 1,
-                minWidth: '100px',
-                fontWeight: '900',
-                p: 1,
-              }}>
-              {value}
-            </Box>
+            <Chip
+              label={value}
+              size='small'
+              color={value ? RolesColor[value] : 'default'}
+              sx={{ fontWeight: '900', minWidth: '80px' }}
+            />
           )
         },
       },
