@@ -29,10 +29,23 @@ export const Statuses = {
   COMPLETED: 'COMPLETED',
 }
 
+export const StatusesColor = {
+  PENDING: 'info.dark',
+  CANCELLED: 'error.dark',
+  APPROVED: 'warning.dark',
+  COMPLETED: 'success.dark',
+}
+
 export const Roles = {
   SUPER_ADMIN: '99-super-admin',
   ADMIN: '98-admin',
   USER: '01-user',
+}
+
+export const RolesColor = {
+  SUPER_ADMIN: 'info.dark',
+  ADMIN: 'success.dark',
+  USER: 'warning.dark',
 }
 
 export const RoleArr = [

@@ -1,5 +1,5 @@
 import Table from '@/common/components/Table'
-import { RestEndpoints, Roles } from '@/common/constants'
+import { RestEndpoints, RolesColor } from '@/common/constants'
 import { Box, Typography } from '@mui/material'
 import { useMemo } from 'react'
 
@@ -42,18 +42,15 @@ const User = () => {
 
           return (
             <Box
-              sx={(theme) => ({
+              sx={{
                 display: 'inline-block',
-                backgroundColor:
-                  cell.getValue() <= Roles.ADMIN
-                    ? theme.palette.primary.dark
-                    : theme.palette.secondary.dark,
+                backgroundColor: value ? RolesColor[value] : 'grey.300',
                 color: '#fff',
                 borderRadius: 1,
-                minWidth: '50px',
+                minWidth: '100px',
                 fontWeight: '900',
                 p: 1,
-              })}>
+              }}>
               {value}
             </Box>
           )
