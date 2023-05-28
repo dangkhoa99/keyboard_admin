@@ -46,9 +46,13 @@ const ProductUpdate = () => {
       return
     }
 
-    setIsLoading(true)
-
     const diff = diffObject(originalFormValue, formValue)
+
+    if (!diff) {
+      return
+    }
+
+    setIsLoading(true)
 
     axios({
       method: 'patch',
