@@ -148,7 +148,7 @@ const MiniDrawer = ({ children }) => {
         }
       })
       .catch((err) => {
-        console.error('Login: ', err)
+        console.error('[ERROR - whoAmI]: ', err)
       })
 
     return () => {}
