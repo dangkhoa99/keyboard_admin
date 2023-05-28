@@ -19,7 +19,7 @@ export const diffObject = (prev, next) => {
     if (prev[key] === Object(prev[key])) {
       if (JSON.stringify(next[key]) !== JSON.stringify(prev[key])) {
         diff[key] = { ...next[key] }
-      } else break
+      } else continue
     }
 
     // Check normal value
