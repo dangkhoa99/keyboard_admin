@@ -35,6 +35,27 @@ export const Roles = {
   USER: '01-user',
 }
 
+export const RoleArr = [
+  // {code: Roles.SUPER_ADMIN, name: 'Super Admin'},
+  { code: Roles.ADMIN, name: 'Admin' },
+  { code: Roles.USER, name: 'User' },
+]
+
+export const Genders = {
+  MALE: '01-male',
+  FEMALE: '02-female',
+  OTHER: '03-other',
+}
+
+export const GenderArr = [
+  { code: Genders.MALE, name: 'Male' },
+  { code: Genders.FEMALE, name: 'Female' },
+  { code: Genders.OTHER, name: 'Other' },
+]
+
+export const regexEmail =
+  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+
 export const TableStyle = {
   muiTablePaperProps: {
     variant: 'outlined',

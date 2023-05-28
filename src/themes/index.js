@@ -1,5 +1,4 @@
 import { createTheme } from '@mui/material/styles'
-import { minHeight } from '@mui/system'
 
 const renderTheme = (mode) => {
   return createTheme({

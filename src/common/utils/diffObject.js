@@ -5,7 +5,7 @@ import isEmpty from 'lodash/isEmpty'
 export const diffObject = (prev, next) => {
   const diff = {}
 
-  for (const key in prev) {
+  for (const key in next) {
     // Check Array
     if (isArray(prev[key])) {
       if (difference(next[key], prev[key]).length > 0) {
