@@ -8,7 +8,7 @@ import {
 import Dashboard from '@/pages/Dashboard/Dashboard'
 import Login from '@/pages/Login/Login'
 import NotFound from '@/pages/NotFound/NotFound'
-import Order from '@/pages/Order/Order'
+import { Order, OrderCreate, OrderDetail, OrderUpdate } from '@/pages/Order'
 import {
   Product,
   ProductCreate,
@@ -64,6 +64,9 @@ const App = () => {
                 <Route path='users/:id/show' element={<UserDetail />} />
                 <Route path='users/:id/edit' element={<UserUpdate />} />
                 <Route path='orders' element={<Order />} />
+                <Route path='orders/new' element={<OrderCreate />} />
+                <Route path='orders/:id/show' element={<OrderDetail />} />
+                <Route path='orders/:id/edit' element={<OrderUpdate />} />
               </Route>
             </Routes>
           </AuthProvider>
