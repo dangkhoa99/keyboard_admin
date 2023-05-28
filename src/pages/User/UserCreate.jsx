@@ -5,14 +5,13 @@ import {
   Routes,
   defaultUserFormValue,
 } from '@/common/constants'
-import { loadLS } from '@/common/utils'
+import { loadLS, convertDataToPayload } from '@/utils'
 import { Grid, Typography } from '@mui/material'
 import axios from 'axios'
 import { useSnackbar } from 'notistack'
 import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import UserInput from './UserInput'
-import { convertDataToPayload } from '@/common/utils/convertDataToPayload'
 
 const UserCreate = () => {
   const { enqueueSnackbar } = useSnackbar()

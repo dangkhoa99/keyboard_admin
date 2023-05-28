@@ -1,5 +1,5 @@
 import { BASE_URL, RestEndpoints, Roles } from '@/common/constants'
-import { loadLS, removeLS, saveLS } from '@/common/utils'
+import { loadLS, removeLS, saveLS } from '@/utils'
 import { AuthContext } from '@/context/AuthContext'
 import axios from 'axios'
 import jwtDecode from 'jwt-decode'

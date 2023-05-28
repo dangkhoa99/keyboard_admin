@@ -1,5 +1,5 @@
 import { BASE_URL, RestEndpoints } from '@/common/constants'
-import { loadLS } from '@/common/utils'
+import { loadLS } from '@/utils'
 import { Autocomplete, Box, Grid, TextField } from '@mui/material'
 import axios from 'axios'
 import { memo, useEffect, useMemo, useState } from 'react'

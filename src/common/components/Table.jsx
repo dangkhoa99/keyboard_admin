@@ -1,5 +1,5 @@
 import { BASE_URL, TableStyle } from '@/common/constants'
-import { loadLS } from '@/common/utils'
+import { loadLS } from '@/utils'
 import { Delete, Edit } from '@mui/icons-material'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import VisibilityIcon from '@mui/icons-material/Visibility'

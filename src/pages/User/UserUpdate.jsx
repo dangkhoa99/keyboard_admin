@@ -6,8 +6,8 @@ import {
   Routes,
   defaultUserFormValue,
 } from '@/common/constants'
-import { loadLS } from '@/common/utils'
-import { diffObject } from '@/common/utils/diffObject'
+import { loadLS } from '@/utils'
+import { diffObject } from '@/utils/diffObject'
 import { Grid, Typography } from '@mui/material'
 import axios from 'axios'
 import { useSnackbar } from 'notistack'

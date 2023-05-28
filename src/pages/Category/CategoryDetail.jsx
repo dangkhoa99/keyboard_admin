@@ -5,7 +5,7 @@ import {
   Routes,
   defaultCategoryFormValue,
 } from '@/common/constants'
-import { loadLS } from '@/common/utils'
+import { loadLS } from '@/utils'
 import { Grid, Typography } from '@mui/material'
 import axios from 'axios'
 import { useEffect, useState } from 'react'

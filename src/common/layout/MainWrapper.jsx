@@ -27,7 +27,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment, useCallback, useEffect, useState } from 'react'
 import axios from 'axios'
 import { BASE_URL, RestEndpoints } from '../constants'
-import { loadLS } from '../utils'
+import { loadLS } from '@/utils'
 import LogoutBtn from '../components/LogoutBtn'
 
 const MENU = [
