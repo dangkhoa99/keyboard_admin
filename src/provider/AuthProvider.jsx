@@ -1,13 +1,16 @@
-import { BASE_URL, RestEndpoints } from '@/common/constants'
+import { BASE_URL, RestEndpoints, Roles } from '@/common/constants'
 import { loadLS, removeLS, saveLS } from '@/common/utils'
 import { AuthContext } from '@/context/AuthContext'
 import axios from 'axios'
 import jwtDecode from 'jwt-decode'
+import { useSnackbar } from 'notistack'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export const AuthProvider = ({ children }) => {
+  const { enqueueSnackbar } = useSnackbar()
   const navigate = useNavigate()
+
   const [authenticated, setAuthenticated] = useState(() => loadLS('token'))
 
   const login = (data) => {
@@ -19,6 +22,13 @@ export const AuthProvider = ({ children }) => {
     })
       .then((res) => {
         if (res.data) {
+          if (res.data.role === Roles.USER) {
+            enqueueSnackbar('Your account does not have permission to login', {
+              variant: 'error',
+            })
+            return
+          }
+
           const token = saveLS('token', res.data.token)
 
           setAuthenticated(token)
@@ -35,6 +45,9 @@ export const AuthProvider = ({ children }) => {
     removeLS('token')
     setAuthenticated(false)
     navigate('/login', { replace: true })
+    enqueueSnackbar('Logout success', {
+      variant: 'success',
+    })
   }
 
   const checkAuth = () => {
