@@ -12,7 +12,12 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BasicModal from './BasicModal'
 
-const Table = ({ url = '', columns = [], keyDelete = '_id' }) => {
+const Table = ({
+  url = '',
+  columns = [],
+  keyDelete = '_id',
+  disabledDelete = false,
+}) => {
   const { enqueueSnackbar } = useSnackbar()
   const navigate = useNavigate()
   const tableInstanceRef = useRef(null)
@@ -26,7 +31,7 @@ const Table = ({ url = '', columns = [], keyDelete = '_id' }) => {
   })
 
   const handleDeleteItem = useCallback(({ id, isMany = false }) => {
-    if (!token) {
+    if (!token || disabledDelete) {
       return
     }
 
@@ -147,23 +152,25 @@ const Table = ({ url = '', columns = [], keyDelete = '_id' }) => {
               </IconButton>
             </Tooltip>
 
-            <BasicModal
-              modalTitle='Are you sure you want to delete this item?'
-              modalContent={`Item: ${row?.original?.[keyDelete]}`}
-              modalActionFunc={() => handleDeleteItem({ id: row.id })}
-              btnLayout={(props) => (
-                <Tooltip arrow placement='right' title='Delete'>
-                  <IconButton
-                    color='error'
-                    onClick={() => {
-                      // console.log('[CLICK] [DELETE]: >>', row)
-                      props?.openModal?.()
-                    }}>
-                    <Delete />
-                  </IconButton>
-                </Tooltip>
-              )}
-            />
+            {!disabledDelete && (
+              <BasicModal
+                modalTitle='Are you sure you want to delete this item?'
+                modalContent={`Item: ${row?.original?.[keyDelete]}`}
+                modalActionFunc={() => handleDeleteItem({ id: row.id })}
+                btnLayout={(props) => (
+                  <Tooltip arrow placement='right' title='Delete'>
+                    <IconButton
+                      color='error'
+                      onClick={() => {
+                        // console.log('[CLICK] [DELETE]: >>', row)
+                        props?.openModal?.()
+                      }}>
+                      <Delete />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              />
+            )}
           </Box>
         )}
         renderTopToolbarCustomActions={() => (
@@ -184,30 +191,32 @@ const Table = ({ url = '', columns = [], keyDelete = '_id' }) => {
               New
             </Button>
 
-            <BasicModal
-              modalTitle='Are you sure you want to delete some items?'
-              modalContent={'Items:'}
-              modalContentArr={tableInstanceRef.current
-                ?.getSelectedRowModel()
-                .flatRows.map((item) => item?.original?.[keyDelete])}
-              modalActionFunc={handleDeleteItems}
-              btnLayout={(props) => (
-                <Button
-                  disabled={isEmpty(rowSelection)}
-                  disableElevation
-                  variant='outlined'
-                  color='error'
-                  startIcon={<Delete />}
-                  onClick={() => props?.openModal?.()}
-                  sx={{ fontWeight: '900', minWidth: '150px' }}>
-                  Delete{' '}
-                  {`(${
-                    tableInstanceRef.current?.getSelectedRowModel().flatRows
-                      .length ?? 0
-                  })`}
-                </Button>
-              )}
-            />
+            {!disabledDelete && (
+              <BasicModal
+                modalTitle='Are you sure you want to delete some items?'
+                modalContent={'Items:'}
+                modalContentArr={tableInstanceRef.current
+                  ?.getSelectedRowModel()
+                  .flatRows.map((item) => item?.original?.[keyDelete])}
+                modalActionFunc={handleDeleteItems}
+                btnLayout={(props) => (
+                  <Button
+                    disabled={isEmpty(rowSelection)}
+                    disableElevation
+                    variant='outlined'
+                    color='error'
+                    startIcon={<Delete />}
+                    onClick={() => props?.openModal?.()}
+                    sx={{ fontWeight: '900', minWidth: '150px' }}>
+                    Delete{' '}
+                    {`(${
+                      tableInstanceRef.current?.getSelectedRowModel().flatRows
+                        .length ?? 0
+                    })`}
+                  </Button>
+                )}
+              />
+            )}
           </Box>
         )}
         displayColumnDefOptions={{

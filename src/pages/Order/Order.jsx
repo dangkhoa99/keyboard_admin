@@ -70,7 +70,7 @@ const Order = () => {
     [],
   )
 
-  return <Table url={RestEndpoints.ORDER} columns={columns} />
+  return <Table url={RestEndpoints.ORDER} columns={columns} disabledDelete />
 }
 
 export default Order
