@@ -166,10 +166,12 @@ const MiniDrawer = ({ children }) => {
             alignItems='center'
             gap={4}
             sx={{ width: '100%' }}>
-            <Tooltip placement='right' title={open ? 'Close' : 'Open'}>
+            <Tooltip
+              placement='right'
+              title={open ? 'Close Menu' : 'Open Menu'}>
               <IconButton
                 color='inherit'
-                aria-label={open ? 'open drawer' : 'close drawer'}
+                aria-label={open ? 'open menu' : 'close menu'}
                 onClick={toggleDrawer}
                 edge='start'
                 sx={{ marginRight: 5 }}>
@@ -222,7 +224,10 @@ const MiniDrawer = ({ children }) => {
               sx={{
                 display: 'block',
                 backgroundColor:
-                  location.pathname === item.link ? 'grey.300' : 'unset',
+                  location.pathname === item.link ||
+                  `/${location.pathname.split('/')[1]}` === item.link
+                    ? 'grey.300'
+                    : 'unset',
               }}>
               <ListItemButton
                 onClick={() => navigate(item.link)}
