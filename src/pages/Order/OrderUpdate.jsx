@@ -4,16 +4,18 @@ import {
   BASE_URL,
   RestEndpoints,
   Routes,
+  Statuses,
   defaultOrderFormValue,
 } from '@/common/constants'
 import { loadLS } from '@/utils'
 import { diffObject } from '@/utils/diffObject'
-import { Grid, Typography } from '@mui/material'
+import { Button, Grid, Typography } from '@mui/material'
 import axios from 'axios'
 import { useSnackbar } from 'notistack'
-import { useCallback, useEffect, useState } from 'react'
+import { Fragment, useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import OrderInput from './OrderInput'
+import BasicModal from '@/common/components/BasicModal'
 
 const OrderUpdate = () => {
   const { enqueueSnackbar } = useSnackbar()
@@ -37,18 +39,10 @@ const OrderUpdate = () => {
     }
   }, [])
 
-  const handleSubmit = () => {
-    // Validation form
-
+  const handleChangeStatusOrder = (status) => {
     const token = loadLS('token')
 
     if (!token) {
-      return
-    }
-
-    const diff = diffObject(originalFormValue, formValue)
-
-    if (!diff) {
       return
     }
 
@@ -60,18 +54,20 @@ const OrderUpdate = () => {
         'Content-Type': 'application/json',
         Authorization: `${token?.type} ${token?.value}`,
       },
-      url: `${BASE_URL}/${RestEndpoints.ORDER}/${id}`,
-      data: diff,
+      url: `${BASE_URL}/${RestEndpoints.ORDER}/${id}/change-status`,
+      data: { status: status },
     })
       .then((res) => {
-        console.log(`[UPDATE] [order]: >>`, res.data)
+        console.log(`[UPDATE STATUS] [order]: >>`, res.data)
 
         setIsLoading(false)
-        enqueueSnackbar('Update Order Success', { variant: 'success' })
+        enqueueSnackbar(`Update Status Order: ${status}`, {
+          variant: 'success',
+        })
         navigate(`/${Routes.ORDER}`)
       })
       .catch((err) => {
-        console.error(`[ERROR - UPDATE] [order]: >>`, err)
+        console.error(`[ERROR - UPDATE STATUS] [order]: >>`, err)
       })
   }
 
@@ -111,12 +107,93 @@ const OrderUpdate = () => {
 
   return (
     <FormWrapper
-      actionTxt='Save'
-      handleAction={handleSubmit}
+      showActionBtn={false}
+      handleAction={() => {}}
       handleCancel={() => navigate(`/${Routes.ORDER}`)}
-      disabledBtn={isLoading}
-      openBottomAction>
+      disabledBtn={isLoading}>
       <Grid container rowSpacing={2}>
+        {formValue.status !== Statuses.CANCELLED &&
+          formValue.status !== Statuses.COMPLETED && (
+            <Grid
+              item
+              xs={12}
+              container
+              columnGap={2}
+              justifyContent='end'
+              sx={{
+                flex: 0,
+                p: 2,
+                borderBottom: '1px solid',
+                borderColor: 'grey.300',
+              }}>
+              {formValue.status === Statuses.PENDING && (
+                <Fragment>
+                  <BasicModal
+                    modalTitle='Are you sure you want CANCELLED this order?'
+                    modalActionFunc={() =>
+                      handleChangeStatusOrder(Statuses.CANCELLED)
+                    }
+                    btnLayout={(props) => (
+                      <Button
+                        disableElevation
+                        variant='contained'
+                        color={'error'}
+                        onClick={() => props?.openModal?.()}
+                        sx={{ minWidth: '120px', fontWeight: '900' }}>
+                        {Statuses.CANCELLED}
+                      </Button>
+                    )}
+                  />
+
+                  <BasicModal
+                    modalTitle='Are you sure you want APPROVED this order?'
+                    modalActionFunc={() =>
+                      handleChangeStatusOrder(Statuses.APPROVED)
+                    }
+                    btnLayout={(props) => (
+                      <Button
+                        disableElevation
+                        variant='contained'
+                        color={'warning'}
+                        onClick={() => props?.openModal?.()}
+                        sx={{
+                          minWidth: '120px',
+                          fontWeight: '900',
+                          textDecoration: 'underline',
+                          textDecorationThickness: 2,
+                          '&:hover': {
+                            textDecoration: 'underline',
+                            textDecorationThickness: 2,
+                          },
+                        }}>
+                        {Statuses.APPROVED}
+                      </Button>
+                    )}
+                  />
+                </Fragment>
+              )}
+
+              {formValue.status === Statuses.APPROVED && (
+                <BasicModal
+                  modalTitle='Are you sure you want COMPLETED this order?'
+                  modalActionFunc={() =>
+                    handleChangeStatusOrder(Statuses.COMPLETED)
+                  }
+                  btnLayout={(props) => (
+                    <Button
+                      disableElevation
+                      variant='contained'
+                      color={'success'}
+                      onClick={() => props?.openModal?.()}
+                      sx={{ minWidth: '120px', fontWeight: '900' }}>
+                      {Statuses.COMPLETED}
+                    </Button>
+                  )}
+                />
+              )}
+            </Grid>
+          )}
+
         <Grid item xs={12}>
           <Typography
             variant='h4'

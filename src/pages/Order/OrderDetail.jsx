@@ -3,6 +3,7 @@ import {
   BASE_URL,
   RestEndpoints,
   Routes,
+  Statuses,
   defaultOrderFormValue,
 } from '@/common/constants'
 import { loadLS } from '@/utils'
@@ -55,6 +56,10 @@ const OrderDetail = () => {
 
   return (
     <FormWrapper
+      showActionBtn={
+        formValue.status !== Statuses.CANCELLED &&
+        formValue.status !== Statuses.COMPLETED
+      }
       actionTxt='Edit'
       handleAction={() => navigate(`/${Routes.ORDER}/${id}/edit`)}
       handleCancel={() => navigate(`/${Routes.ORDER}`)}>

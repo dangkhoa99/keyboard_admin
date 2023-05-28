@@ -6,9 +6,10 @@ const FormWrapper = ({
   handleAction,
   handleCancel,
   cancelTxt = 'Back',
-  actionTxt,
+  actionTxt = '',
   openBottomAction = false,
   disabledBtn = false,
+  showActionBtn = true,
 }) => {
   return (
     <Paper
@@ -44,14 +45,16 @@ const FormWrapper = ({
             {cancelTxt}
           </Button>
 
-          <Button
-            disabled={disabledBtn}
-            disableElevation
-            variant='contained'
-            onClick={handleAction}
-            sx={{ minWidth: '100px', fontWeight: '900' }}>
-            {actionTxt}
-          </Button>
+          {showActionBtn && (
+            <Button
+              disabled={disabledBtn}
+              disableElevation
+              variant='contained'
+              onClick={handleAction}
+              sx={{ minWidth: '100px', fontWeight: '900' }}>
+              {actionTxt}
+            </Button>
+          )}
         </Grid>
 
         <Grid item sx={{ flex: 1, overflow: 'overlay', pt: 2, pb: 2 }}>
@@ -80,14 +83,16 @@ const FormWrapper = ({
               {cancelTxt}
             </Button>
 
-            <Button
-              disabled={disabledBtn}
-              disableElevation
-              variant='contained'
-              onClick={handleAction}
-              sx={{ minWidth: '100px', fontWeight: '900' }}>
-              {actionTxt}
-            </Button>
+            {showActionBtn && (
+              <Button
+                disabled={disabledBtn}
+                disableElevation
+                variant='contained'
+                onClick={handleAction}
+                sx={{ minWidth: '100px', fontWeight: '900' }}>
+                {actionTxt}
+              </Button>
+            )}
           </Grid>
         )}
       </Grid>
