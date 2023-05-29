@@ -5,6 +5,7 @@ import {
   CategoryDetail,
   CategoryUpdate,
 } from '@/pages/Category'
+import { ChangePassword } from '@/pages/ChangePassword'
 import Dashboard from '@/pages/Dashboard/Dashboard'
 import Login from '@/pages/Login/Login'
 import NotFound from '@/pages/NotFound/NotFound'
@@ -67,6 +68,7 @@ const App = () => {
                 <Route path='orders/new' element={<OrderCreate />} />
                 <Route path='orders/:id/show' element={<OrderDetail />} />
                 <Route path='orders/:id/edit' element={<OrderUpdate />} />
+                <Route path='change-password' element={<ChangePassword />} />
               </Route>
             </Routes>
           </AuthProvider>

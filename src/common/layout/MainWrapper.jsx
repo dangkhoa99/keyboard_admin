@@ -1,13 +1,16 @@
+import { loadLS } from '@/utils'
+import CategoryIcon from '@mui/icons-material/Category'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import KeyboardIcon from '@mui/icons-material/Keyboard'
 import MenuIcon from '@mui/icons-material/Menu'
+import PasswordIcon from '@mui/icons-material/Password'
 import PersonIcon from '@mui/icons-material/Person'
 import ReceiptIcon from '@mui/icons-material/Receipt'
-import CategoryIcon from '@mui/icons-material/Category'
 import {
   Avatar,
   Box,
+  Divider,
   IconButton,
   List,
   ListItem,
@@ -23,12 +26,11 @@ import {
   Typography,
   styled,
 } from '@mui/material'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { Fragment, useCallback, useEffect, useState } from 'react'
 import axios from 'axios'
-import { BASE_URL, RestEndpoints } from '../constants'
-import { loadLS } from '@/utils'
+import { Fragment, useCallback, useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import LogoutBtn from '../components/LogoutBtn'
+import { BASE_URL, RestEndpoints } from '../constants'
 
 const MENU = [
   { id: '1', name: 'Dashboard', icon: <DashboardIcon />, link: '/' },
@@ -36,6 +38,15 @@ const MENU = [
   { id: '3', name: 'Product', icon: <KeyboardIcon />, link: '/products' },
   { id: '4', name: 'User', icon: <PersonIcon />, link: '/users' },
   { id: '5', name: 'Order', icon: <ReceiptIcon />, link: '/orders' },
+]
+
+const USER_MENU = [
+  {
+    id: '1',
+    name: 'Password',
+    icon: <PasswordIcon />,
+    link: '/change-password',
+  },
 ]
 
 const drawerWidth = 240
@@ -216,8 +227,50 @@ const MiniDrawer = ({ children }) => {
       <Drawer variant='permanent' open={open}>
         <DrawerHeader />
 
-        <List>
+        <List sx={{ flex: 1 }}>
           {MENU.map((item, index) => (
+            <ListItem
+              key={item.id}
+              disablePadding
+              sx={{
+                display: 'block',
+                backgroundColor:
+                  location.pathname === item.link ||
+                  `/${location.pathname.split('/')[1]}` === item.link
+                    ? 'grey.300'
+                    : 'unset',
+              }}>
+              <ListItemButton
+                onClick={() => navigate(item.link)}
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? 'initial' : 'center',
+                  px: 2.5,
+                }}>
+                <Tooltip title={open ? '' : item.name} placement='right'>
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : 'auto',
+                      justifyContent: 'center',
+                    }}>
+                    {item.icon}
+                  </ListItemIcon>
+                </Tooltip>
+
+                <ListItemText
+                  primary={item.name}
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+
+        <Divider />
+
+        <List>
+          {USER_MENU.map((item, index) => (
             <ListItem
               key={item.id}
               disablePadding

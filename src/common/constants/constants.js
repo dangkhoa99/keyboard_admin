@@ -13,6 +13,7 @@ export const RestEndpoints = {
   LOGIN: 'auth/signIn',
   WHO_AM_I: 'auth/whoAmI',
   USER: 'users',
+  CHANGE_PASSWORD: 'users/changePassword',
   PRODUCT: 'products',
   CATEGORY: 'categories',
   ORDER: 'orders',
