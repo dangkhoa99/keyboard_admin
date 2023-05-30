@@ -6,7 +6,12 @@ import {
   Routes,
   defaultProductFormValue,
 } from '@/common/constants'
-import { loadLS, diffObject } from '@/utils'
+import {
+  loadLS,
+  diffObject,
+  setProductFormValueHelper,
+  validateFileSize,
+} from '@/utils'
 import { Grid, Typography } from '@mui/material'
 import axios from 'axios'
 import { useSnackbar } from 'notistack'
@@ -26,14 +31,7 @@ const ProductUpdate = () => {
   const [isLoading, setIsLoading] = useState(false)
 
   const onFormValueChange = useCallback((key, value) => {
-    switch (key) {
-      default:
-        setFormValue((prev) => ({
-          ...prev,
-          [key]: value,
-        }))
-        break
-    }
+    setProductFormValueHelper(key, value, setFormValue)
   }, [])
 
   const handleSubmit = () => {
@@ -46,32 +44,139 @@ const ProductUpdate = () => {
     }
 
     const diff = diffObject(originalFormValue, formValue)
+    // console.log('[originalFormValue]>>', originalFormValue)
+    // console.log('[formValue]>>', formValue)
+    // console.log('[DIFF]>>', diff)
 
     if (!diff) {
       return
     }
 
-    setIsLoading(true)
-
-    axios({
-      method: 'patch',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `${token?.type} ${token?.value}`,
-      },
-      url: `${BASE_URL}/${RestEndpoints.PRODUCT}/${id}`,
-      data: diff,
-    })
-      .then(() => {
-        // console.log(`[UPDATE] [product]: >>`, res.data)
-
-        setIsLoading(false)
-        enqueueSnackbar('Update Product Success', { variant: 'success' })
-        navigate(`/${Routes.PRODUCT}`)
+    if (!diff.imageFiles) {
+      // Not Change/Remove Image
+      axios({
+        method: 'patch',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `${token?.type} ${token?.value}`,
+        },
+        url: `${BASE_URL}/${RestEndpoints.PRODUCT}/${id}`,
+        data: diff,
       })
-      .catch((err) => {
-        console.error(`[ERROR - UPDATE] [product]: >>`, err)
+        .then(() => {
+          // console.log(`[UPDATE] [product]: >>`, _res.data)
+
+          setIsLoading(false)
+          enqueueSnackbar('Update Product Success', {
+            variant: 'success',
+          })
+          navigate(`/${Routes.PRODUCT}`)
+        })
+        .catch((_err) => {
+          console.error(`[ERROR - UPDATE] [product]: >>`, _err)
+        })
+      return
+    }
+
+    if (diff.imageFiles.length > 0) {
+      // Change Image
+      const validateImages = Array.from(diff.imageFiles).every((image) =>
+        validateFileSize(image),
+      )
+
+      if (!validateImages) {
+        console.error('Invalid File Size. Maximum file size is 500KB.')
+        return
+      }
+
+      const formData = new FormData()
+
+      for (let i = 0; i < formValue.imageFiles.length; i++) {
+        if (formValue.previewImages[i].isNotUpload) {
+          formData.append('images', formValue.imageFiles[i])
+        }
+      }
+
+      setIsLoading(true)
+
+      axios({
+        method: 'post',
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `${token?.type} ${token?.value}`,
+        },
+        url: `${BASE_URL}/${RestEndpoints.UPLOAD_IMAGES}`,
+        data: formData,
       })
+        .then((res) => {
+          const { imageFiles, previewImages, images, ...other } = diff
+
+          const data = {
+            ...other,
+            images: [
+              ...previewImages.filter((item) => !item.isNotUpload),
+              ...(res.data.map((item) => item._id) ?? []),
+            ],
+          }
+
+          console.log('[data]: ', data)
+
+          axios({
+            method: 'patch',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `${token?.type} ${token?.value}`,
+            },
+            url: `${BASE_URL}/${RestEndpoints.PRODUCT}/${id}`,
+            data,
+          })
+            .then((_res) => {
+              console.log(`[UPDATE] [product]: >>`, _res.data)
+
+              setIsLoading(false)
+              enqueueSnackbar('Update Product Success', {
+                variant: 'success',
+              })
+              navigate(`/${Routes.PRODUCT}`)
+            })
+            .catch((_err) => {
+              console.error(`[ERROR - UPDATE] [product]: >>`, _err)
+            })
+        })
+        .catch((err) => {
+          console.error(`[ERROR - CREATE] [images]: >>`, err)
+        })
+    } else {
+      // Remove Image
+      const { imageFiles, previewImages, ...other } = diff
+
+      const data = {
+        ...other,
+        images: [],
+      }
+
+      axios({
+        method: 'patch',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `${token?.type} ${token?.value}`,
+        },
+        url: `${BASE_URL}/${RestEndpoints.PRODUCT}/${id}`,
+        data,
+      })
+        .then((_res) => {
+          console.log(`[UPDATE] [product]: >>`, _res.data)
+
+          setIsLoading(false)
+          enqueueSnackbar('Update Product Success', {
+            variant: 'success',
+          })
+          navigate(`/${Routes.PRODUCT}`)
+        })
+        .catch((_err) => {
+          console.error(`[ERROR - UPDATE] [product]: >>`, _err)
+        })
+    }
   }
 
   useEffect(() => {
@@ -93,8 +198,30 @@ const ProductUpdate = () => {
     })
       .then((res) => {
         // console.log(`[GET ID] [product]: >>`, res.data)
-        setFormValue(res.data)
-        setOriginalFormValue(res.data)
+        setFormValue({
+          ...res.data,
+          images:
+            res.data?.images?.map((image) => ({ ...image, id: image._id })) ??
+            [],
+          imageFiles:
+            res.data?.images?.map((image) => ({ ...image, id: image._id })) ??
+            [],
+          previewImages:
+            res.data?.images?.map((image) => ({ ...image, id: image._id })) ??
+            [],
+        })
+        setOriginalFormValue({
+          ...res.data,
+          images:
+            res.data?.images?.map((image) => ({ ...image, id: image._id })) ??
+            [],
+          imageFiles:
+            res.data?.images?.map((image) => ({ ...image, id: image._id })) ??
+            [],
+          previewImages:
+            res.data?.images?.map((image) => ({ ...image, id: image._id })) ??
+            [],
+        })
         setIsLoading(false)
       })
       .catch((err) => {

@@ -1,6 +1,7 @@
+import UploadImages from '@/common/components/UploadImages'
 import { BASE_URL, RestEndpoints } from '@/common/constants'
 import { loadLS } from '@/utils'
-import { Autocomplete, Box, Grid, TextField } from '@mui/material'
+import { Autocomplete, Box, Grid, TextField, Typography } from '@mui/material'
 import axios from 'axios'
 import { memo, useEffect, useMemo, useState } from 'react'
 
@@ -70,7 +71,7 @@ const ProductInput = ({
 
         <Grid item xs={12}>
           <Autocomplete
-            disabled={category.isLoading || isDetail}
+            disabled={category.isLoading || isDetail || isLoading}
             fullWidth
             disableClearable={!!currCategory}
             value={currCategory}
@@ -128,7 +129,21 @@ const ProductInput = ({
         </Grid>
 
         <Grid item xs={12}>
-          <TextField fullWidth disabled size='medium' label='Images' />
+          {isDetail && formValue.previewImages.length === 0 ? (
+            <Typography
+              variant='body1'
+              textAlign='start'
+              sx={{ color: 'grey.600' }}>
+              No Images
+            </Typography>
+          ) : (
+            <UploadImages
+              disabled={isLoading || isDetail}
+              links={formValue.previewImages}
+              onChange={(e) => onFormValueChange('images', e)}
+              onDelete={(id) => onFormValueChange('delete', id)}
+            />
+          )}
         </Grid>
       </Grid>
     </Box>

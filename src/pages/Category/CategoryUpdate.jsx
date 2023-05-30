@@ -6,14 +6,18 @@ import {
   Routes,
   defaultCategoryFormValue,
 } from '@/common/constants'
-import { loadLS, diffObject, setCategoryFormValueHelper } from '@/utils'
+import {
+  loadLS,
+  diffObject,
+  setCategoryFormValueHelper,
+  validateFileSize,
+} from '@/utils'
 import { Grid, Typography } from '@mui/material'
 import axios from 'axios'
 import { useSnackbar } from 'notistack'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import CategoryInput from './CategoryInput'
-import { set } from 'lodash'
 
 const CategoryUpdate = () => {
   const { enqueueSnackbar } = useSnackbar()
@@ -77,6 +81,15 @@ const CategoryUpdate = () => {
 
     if (diff.imageFile.length > 0) {
       // Change Image
+      const validateImages = Array.from(diff.imageFile).every((image) =>
+        validateFileSize(image),
+      )
+
+      if (!validateImages) {
+        console.error('Invalid File Size. Maximum file size is 500KB.')
+        return
+      }
+
       const formData = new FormData()
 
       formData.append('image', diff.imageFile[0])
@@ -180,55 +193,25 @@ const CategoryUpdate = () => {
         setFormValue({
           ...res.data,
           image: res.data?.image
-            ? [
-                {
-                  ...res.data.image,
-                  id: res.data.image._id,
-                },
-              ]
+            ? [{ ...res.data.image, id: res.data.image._id }]
             : [],
           imageFile: res.data?.image
-            ? [
-                {
-                  ...res.data.image,
-                  id: res.data.image._id,
-                },
-              ]
+            ? [{ ...res.data.image, id: res.data.image._id }]
             : [],
           previewImage: res.data?.image
-            ? [
-                {
-                  ...res.data.image,
-                  id: res.data.image._id,
-                },
-              ]
+            ? [{ ...res.data.image, id: res.data.image._id }]
             : [],
         })
         setOriginalFormValue({
           ...res.data,
           image: res.data?.image
-            ? [
-                {
-                  ...res.data.image,
-                  id: res.data.image._id,
-                },
-              ]
+            ? [{ ...res.data.image, id: res.data.image._id }]
             : [],
           imageFile: res.data?.image
-            ? [
-                {
-                  ...res.data.image,
-                  id: res.data.image._id,
-                },
-              ]
+            ? [{ ...res.data.image, id: res.data.image._id }]
             : [],
           previewImage: res.data?.image
-            ? [
-                {
-                  ...res.data.image,
-                  id: res.data.image._id,
-                },
-              ]
+            ? [{ ...res.data.image, id: res.data.image._id }]
             : [],
         })
         setIsLoading(false)

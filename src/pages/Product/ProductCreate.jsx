@@ -5,7 +5,7 @@ import {
   Routes,
   defaultProductFormValue,
 } from '@/common/constants'
-import { loadLS } from '@/utils'
+import { loadLS, setProductFormValueHelper, validateFileSize } from '@/utils'
 import { Grid, Typography } from '@mui/material'
 import axios from 'axios'
 import { useSnackbar } from 'notistack'
@@ -22,18 +22,7 @@ const ProductCreate = () => {
   const [error, setError] = useState('')
 
   const onFormValueChange = useCallback((key, value) => {
-    switch (key) {
-      default:
-        setFormValue((prev) => ({
-          ...prev,
-          [key]: value,
-        }))
-        break
-    }
-  }, [])
-
-  const clearFormValue = useCallback(() => {
-    setFormValue(defaultProductFormValue)
+    setProductFormValueHelper(key, value, setFormValue)
   }, [])
 
   const handleSubmit = () => {
@@ -47,32 +36,101 @@ const ProductCreate = () => {
       return
     }
 
+    if (formValue.imageFiles.length === 0) {
+      setCreateLoading(true)
+
+      const { imageFiles, previewImages, ...other } = formValue
+
+      axios({
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `${token?.type} ${token?.value}`,
+        },
+        url: `${BASE_URL}/${RestEndpoints.PRODUCT}`,
+        data: other,
+      })
+        .then((res) => {
+          console.log(`[CREATE] [product]: >>`, res.data)
+
+          setCreateLoading(false)
+          enqueueSnackbar('Create Product Success', { variant: 'success' })
+          navigate(`/${Routes.PRODUCT}`)
+        })
+        .catch((err) => {
+          console.error(`[ERROR - CREATE] [product]: >>`, err)
+        })
+
+      return
+    }
+
+    // Validation form
+    const validateImages = Array.from(formValue.imageFiles).every((image) =>
+      validateFileSize(image),
+    )
+
+    // console.log('[validateImages]: ', validateImages)
+
+    if (!validateImages) {
+      setError('Invalid File Size. Maximum file size is 500KB.')
+      return
+    }
+
+    const formData = new FormData()
+
+    for (let i = 0; i < formValue.imageFiles.length; i++) {
+      formData.append('images', formValue.imageFiles[i])
+    }
+
     setCreateLoading(true)
 
     axios({
       method: 'post',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'multipart/form-data',
         Authorization: `${token?.type} ${token?.value}`,
       },
-      url: `${BASE_URL}/${RestEndpoints.PRODUCT}`,
-      data: formValue,
+      url: `${BASE_URL}/${RestEndpoints.UPLOAD_IMAGES}`,
+      data: formData,
     })
       .then((res) => {
-        console.log(`[CREATE] [product]: >>`, res.data)
+        const { imageFiles, previewImages, ...other } = formValue
 
-        setCreateLoading(false)
-        enqueueSnackbar('Create Product Success', { variant: 'success' })
-        clearFormValue()
-        navigate(`/${Routes.PRODUCT}`)
+        const data = {
+          ...other,
+          images: res.data.map((item) => item),
+        }
+
+        console.log('[data]: ', data)
+
+        axios({
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `${token?.type} ${token?.value}`,
+          },
+          url: `${BASE_URL}/${RestEndpoints.PRODUCT}`,
+          data,
+        })
+          .then((_res) => {
+            console.log(`[CREATE] [product]: >>`, _res.data)
+
+            setCreateLoading(false)
+            enqueueSnackbar('Create Product Success', { variant: 'success' })
+            navigate(`/${Routes.PRODUCT}`)
+          })
+          .catch((_err) => {
+            console.error(`[ERROR - CREATE] [product]: >>`, _err)
+          })
       })
       .catch((err) => {
-        console.error(`[ERROR - CREATE] [product]: >>`, err)
+        console.error(`[ERROR - CREATE] [images]: >>`, err)
       })
   }
 
   return (
     <FormWrapper
+      isLoading={createLoading}
       openBottomAction
       actionTxt='Create'
       handleAction={handleSubmit}

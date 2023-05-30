@@ -4,5 +4,7 @@ export const defaultProductFormValue = {
   quantity: 0,
   price: 0,
   description: '',
-  // imageLinks
+  images: [],
+  imageFiles: [],
+  previewImages: [],
 }

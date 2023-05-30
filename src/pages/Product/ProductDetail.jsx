@@ -39,7 +39,12 @@ const ProductDetail = () => {
     })
       .then((res) => {
         console.log(`[GET ID] [product]: >>`, res.data)
-        setFormValue(res.data)
+        setFormValue({
+          ...res.data,
+          previewImages:
+            res.data?.images?.map((image) => ({ ...image, id: image._id })) ??
+            [],
+        })
         setIsLoading(false)
       })
       .catch((err) => {
