@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   Grid,
@@ -30,6 +31,8 @@ const ChangePassword = () => {
     confirmPassword: '',
   })
 
+  const [error, setError] = useState('')
+
   const [isShowPassword, setIsShowPassword] = useState(false)
 
   const toggleShowPassword = useCallback(() => {
@@ -37,6 +40,7 @@ const ChangePassword = () => {
   }, [isShowPassword])
 
   const onFormValueChange = useCallback((key, value) => {
+    setError(undefined)
     switch (key) {
       default:
         setFormValue((prev) => ({
@@ -47,12 +51,29 @@ const ChangePassword = () => {
     }
   }, [])
 
-  const validationForm = useCallback((formValue) => {}, [])
-
   const handleChangePassword = () => {
     // Validation form
+    if (!formValue.currentPassword) {
+      setError('Please enter current password')
+      return
+    }
 
-    console.log('[Submit] Category: >>', formValue)
+    if (!formValue.newPassword) {
+      setError('Please enter new password')
+      return
+    }
+
+    if (!formValue.confirmPassword) {
+      setError('Please enter confirm password')
+      return
+    }
+
+    if (formValue.newPassword !== formValue.confirmPassword) {
+      setError('Confirm password not match')
+      return
+    }
+
+    // console.log('[Submit] Category: >>', formValue)
 
     const token = loadLS('token')
 
@@ -82,7 +103,7 @@ const ChangePassword = () => {
         navigate(`/${Routes.LOGIN}`)
       })
       .catch((err) => {
-        console.error(`[ERROR - CHANGE] [password]: >>`, err)
+        setError(err.response.data.message || 'Change Password Failed')
       })
   }
 
@@ -100,6 +121,12 @@ const ChangePassword = () => {
           Change Password
         </Typography>
       </Grid>
+
+      {error && (
+        <Grid item xs={12}>
+          <Alert severity='error'>{error}</Alert>
+        </Grid>
+      )}
 
       <Grid item xs={12}>
         <TextField
