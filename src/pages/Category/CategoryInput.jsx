@@ -1,4 +1,5 @@
-import { Box, Grid, TextField } from '@mui/material'
+import UploadImages from '@/common/components/UploadImages'
+import { Box, Grid, TextField, Typography } from '@mui/material'
 import { memo } from 'react'
 
 const CategoryInput = ({
@@ -42,7 +43,23 @@ const CategoryInput = ({
         </Grid>
 
         <Grid item xs={12}>
-          <TextField fullWidth disabled size='medium' label='Images' />
+          {isDetail && formValue.previewImage.length === 0 ? (
+            <Typography
+              variant='body1'
+              textAlign='start'
+              sx={{ color: 'grey.600' }}>
+              No Images
+            </Typography>
+          ) : (
+            <UploadImages
+              disabled={isLoading || isDetail}
+              title='Upload Image'
+              isSingle
+              links={formValue.previewImage}
+              onChange={(e) => onFormValueChange('image', e)}
+              onDelete={(id) => onFormValueChange('delete', id)}
+            />
+          )}
         </Grid>
       </Grid>
     </Box>

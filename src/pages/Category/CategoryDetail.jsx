@@ -38,8 +38,18 @@ const CategoryDetail = () => {
       url: `${BASE_URL}/${RestEndpoints.CATEGORY}/${id}`,
     })
       .then((res) => {
-        console.log(`[GET ID] [category]: >>`, res.data)
-        setFormValue(res.data)
+        // console.log(`[GET ID] [category]: >>`, res.data)
+        setFormValue({
+          ...res.data,
+          previewImage: res.data?.image
+            ? [
+                {
+                  ...res.data.image,
+                  id: res.data.image._id,
+                },
+              ]
+            : [],
+        })
         setIsLoading(false)
       })
       .catch((err) => {

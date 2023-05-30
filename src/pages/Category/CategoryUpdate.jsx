@@ -6,13 +6,14 @@ import {
   Routes,
   defaultCategoryFormValue,
 } from '@/common/constants'
-import { loadLS, diffObject } from '@/utils'
+import { loadLS, diffObject, setCategoryFormValueHelper } from '@/utils'
 import { Grid, Typography } from '@mui/material'
 import axios from 'axios'
 import { useSnackbar } from 'notistack'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import CategoryInput from './CategoryInput'
+import { set } from 'lodash'
 
 const CategoryUpdate = () => {
   const { enqueueSnackbar } = useSnackbar()
@@ -26,14 +27,7 @@ const CategoryUpdate = () => {
   const [isLoading, setIsLoading] = useState(false)
 
   const onFormValueChange = useCallback((key, value) => {
-    switch (key) {
-      default:
-        setFormValue((prev) => ({
-          ...prev,
-          [key]: value,
-        }))
-        break
-    }
+    setCategoryFormValueHelper(key, value, setFormValue)
   }, [])
 
   const handleSubmit = () => {
@@ -47,31 +41,121 @@ const CategoryUpdate = () => {
 
     const diff = diffObject(originalFormValue, formValue)
 
+    // console.log('[originalFormValue]>>', originalFormValue)
+    // console.log('[formValue]>>', formValue)
+    // console.log('[DIFF]>>', diff)
+
     if (!diff) {
       return
     }
 
-    setIsLoading(true)
-
-    axios({
-      method: 'patch',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `${token?.type} ${token?.value}`,
-      },
-      url: `${BASE_URL}/${RestEndpoints.CATEGORY}/${id}`,
-      data: diff,
-    })
-      .then(() => {
-        // console.log(`[UPDATE] [category]: >>`, res.data)
-
-        setIsLoading(false)
-        enqueueSnackbar('Update Category Success', { variant: 'success' })
-        navigate(`/${Routes.CATEGORY}`)
+    if (!diff.imageFile) {
+      // Not Change/Remove Image
+      axios({
+        method: 'patch',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `${token?.type} ${token?.value}`,
+        },
+        url: `${BASE_URL}/${RestEndpoints.CATEGORY}/${id}`,
+        data: diff,
       })
-      .catch((err) => {
-        console.error(`[ERROR - UPDATE] [category]: >>`, err)
+        .then(() => {
+          // console.log(`[UPDATE] [category]: >>`, _res.data)
+
+          setIsLoading(false)
+          enqueueSnackbar('Update Category Success', {
+            variant: 'success',
+          })
+          navigate(`/${Routes.CATEGORY}`)
+        })
+        .catch((_err) => {
+          console.error(`[ERROR - UPDATE] [category]: >>`, _err)
+        })
+      return
+    }
+
+    if (diff.imageFile.length > 0) {
+      // Change Image
+      const formData = new FormData()
+
+      formData.append('image', diff.imageFile[0])
+
+      setIsLoading(true)
+
+      axios({
+        method: 'post',
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `${token?.type} ${token?.value}`,
+        },
+        url: `${BASE_URL}/${RestEndpoints.IMAGE}`,
+        data: formData,
       })
+        .then((res) => {
+          const { imageFile, previewImage, ...other } = diff
+
+          const data = {
+            ...other,
+            image: res.data._id,
+          }
+
+          axios({
+            method: 'patch',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `${token?.type} ${token?.value}`,
+            },
+            url: `${BASE_URL}/${RestEndpoints.CATEGORY}/${id}`,
+            data,
+          })
+            .then(() => {
+              // console.log(`[UPDATE] [category]: >>`, _res.data)
+
+              setIsLoading(false)
+              enqueueSnackbar('Update Category Success', {
+                variant: 'success',
+              })
+              navigate(`/${Routes.CATEGORY}`)
+            })
+            .catch((_err) => {
+              console.error(`[ERROR - UPDATE] [category]: >>`, _err)
+            })
+        })
+        .catch((err) => {
+          console.error(`[ERROR - CREATE] [images]: >>`, err)
+        })
+    } else {
+      // Remove Image
+      const { imageFile, previewImage, ...other } = diff
+
+      const data = {
+        ...other,
+        image: null,
+      }
+
+      axios({
+        method: 'patch',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `${token?.type} ${token?.value}`,
+        },
+        url: `${BASE_URL}/${RestEndpoints.CATEGORY}/${id}`,
+        data,
+      })
+        .then(() => {
+          // console.log(`[UPDATE] [category]: >>`, _res.data)
+
+          setIsLoading(false)
+          enqueueSnackbar('Update Category Success', {
+            variant: 'success',
+          })
+          navigate(`/${Routes.CATEGORY}`)
+        })
+        .catch((_err) => {
+          console.error(`[ERROR - UPDATE] [category]: >>`, _err)
+        })
+    }
   }
 
   useEffect(() => {
@@ -93,8 +177,60 @@ const CategoryUpdate = () => {
     })
       .then((res) => {
         // console.log(`[GET ID] [category]: >>`, res.data)
-        setFormValue(res.data)
-        setOriginalFormValue(res.data)
+        setFormValue({
+          ...res.data,
+          image: res.data?.image
+            ? [
+                {
+                  ...res.data.image,
+                  id: res.data.image._id,
+                },
+              ]
+            : [],
+          imageFile: res.data?.image
+            ? [
+                {
+                  ...res.data.image,
+                  id: res.data.image._id,
+                },
+              ]
+            : [],
+          previewImage: res.data?.image
+            ? [
+                {
+                  ...res.data.image,
+                  id: res.data.image._id,
+                },
+              ]
+            : [],
+        })
+        setOriginalFormValue({
+          ...res.data,
+          image: res.data?.image
+            ? [
+                {
+                  ...res.data.image,
+                  id: res.data.image._id,
+                },
+              ]
+            : [],
+          imageFile: res.data?.image
+            ? [
+                {
+                  ...res.data.image,
+                  id: res.data.image._id,
+                },
+              ]
+            : [],
+          previewImage: res.data?.image
+            ? [
+                {
+                  ...res.data.image,
+                  id: res.data.image._id,
+                },
+              ]
+            : [],
+        })
         setIsLoading(false)
       })
       .catch((err) => {

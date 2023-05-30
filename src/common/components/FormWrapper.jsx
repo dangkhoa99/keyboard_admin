@@ -1,7 +1,8 @@
-import { Button, Grid, Paper } from '@mui/material'
+import { Button, CircularProgress, Grid, Paper } from '@mui/material'
 import React from 'react'
 
 const FormWrapper = ({
+  isLoading = false,
   children,
   handleAction,
   handleCancel,
@@ -37,7 +38,7 @@ const FormWrapper = ({
             borderColor: 'grey.300',
           }}>
           <Button
-            disabled={disabledBtn}
+            disabled={disabledBtn || isLoading}
             disableElevation
             variant='outlined'
             onClick={handleCancel}
@@ -47,12 +48,16 @@ const FormWrapper = ({
 
           {showActionBtn && (
             <Button
-              disabled={disabledBtn}
+              disabled={disabledBtn || isLoading}
               disableElevation
               variant='contained'
               onClick={handleAction}
               sx={{ minWidth: '100px', fontWeight: '900' }}>
-              {actionTxt}
+              {isLoading ? (
+                <CircularProgress size={25} color='inherit' />
+              ) : (
+                actionTxt
+              )}
             </Button>
           )}
         </Grid>
@@ -75,7 +80,7 @@ const FormWrapper = ({
               borderColor: 'grey.300',
             }}>
             <Button
-              disabled={disabledBtn}
+              disabled={disabledBtn || isLoading}
               disableElevation
               variant='outlined'
               onClick={handleCancel}
@@ -85,12 +90,16 @@ const FormWrapper = ({
 
             {showActionBtn && (
               <Button
-                disabled={disabledBtn}
+                disabled={disabledBtn || isLoading}
                 disableElevation
                 variant='contained'
                 onClick={handleAction}
                 sx={{ minWidth: '100px', fontWeight: '900' }}>
-                {actionTxt}
+                {isLoading ? (
+                  <CircularProgress size={25} color='inherit' />
+                ) : (
+                  actionTxt
+                )}
               </Button>
             )}
           </Grid>

@@ -1,5 +1,7 @@
 export const defaultCategoryFormValue = {
   name: '',
   description: '',
-  // image,
+  image: [],
+  imageFile: [],
+  previewImage: [],
 }

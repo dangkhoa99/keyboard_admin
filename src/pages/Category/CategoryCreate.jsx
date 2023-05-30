@@ -5,7 +5,7 @@ import {
   Routes,
   defaultCategoryFormValue,
 } from '@/common/constants'
-import { loadLS } from '@/utils'
+import { loadLS, setCategoryFormValueHelper, validateFileSize } from '@/utils'
 import { Grid, Typography } from '@mui/material'
 import axios from 'axios'
 import { useSnackbar } from 'notistack'
@@ -22,24 +22,11 @@ const CategoryCreate = () => {
   const [error, setError] = useState('')
 
   const onFormValueChange = useCallback((key, value) => {
-    switch (key) {
-      default:
-        setFormValue((prev) => ({
-          ...prev,
-          [key]: value,
-        }))
-        break
-    }
-  }, [])
-
-  const clearFormValue = useCallback(() => {
-    setFormValue(defaultCategoryFormValue)
+    setCategoryFormValueHelper(key, value, setFormValue)
   }, [])
 
   const handleSubmit = () => {
-    // Validation form
-
-    console.log('[Submit] Category: >>', formValue)
+    // console.log('[Submit] Category: >>', formValue)
 
     const token = loadLS('token')
 
@@ -47,32 +34,97 @@ const CategoryCreate = () => {
       return
     }
 
+    if (formValue.imageFile.length === 0) {
+      setCreateLoading(true)
+
+      axios({
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `${token?.type} ${token?.value}`,
+        },
+        url: `${BASE_URL}/${RestEndpoints.CATEGORY}`,
+        data: {
+          name: formValue.name,
+          description: formValue.description,
+        },
+      })
+        .then(() => {
+          // console.log(`[CREATE] [category]: >>`, res.data)
+
+          setCreateLoading(false)
+          enqueueSnackbar('Create Category Success', { variant: 'success' })
+          navigate(`/${Routes.CATEGORY}`)
+        })
+        .catch((err) => {
+          console.error(`[ERROR - CREATE] [category]: >>`, err)
+        })
+
+      return
+    }
+
+    // Validation form
+    const validateImages = Array.from(formValue.imageFile).every((image) =>
+      validateFileSize(image),
+    )
+
+    // console.log('[validateImages]: ', validateImages)
+
+    if (!validateImages) {
+      setError('Invalid File Size. Maximum file size is 500KB.')
+      return
+    }
+
+    const formData = new FormData()
+
+    formData.append('image', formValue.imageFile[0])
+
     setCreateLoading(true)
 
     axios({
       method: 'post',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'multipart/form-data',
         Authorization: `${token?.type} ${token?.value}`,
       },
-      url: `${BASE_URL}/${RestEndpoints.CATEGORY}`,
-      data: formValue,
+      url: `${BASE_URL}/${RestEndpoints.IMAGE}`,
+      data: formData,
     })
       .then((res) => {
-        console.log(`[CREATE] [category]: >>`, res.data)
+        const data = {
+          name: formValue.name,
+          description: formValue.description,
+          image: res.data._id,
+        }
 
-        setCreateLoading(false)
-        enqueueSnackbar('Create Category Success', { variant: 'success' })
-        clearFormValue()
-        navigate(`/${Routes.CATEGORY}`)
+        axios({
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `${token?.type} ${token?.value}`,
+          },
+          url: `${BASE_URL}/${RestEndpoints.CATEGORY}`,
+          data,
+        })
+          .then(() => {
+            // console.log(`[CREATE] [category]: >>`, _res.data)
+
+            setCreateLoading(false)
+            enqueueSnackbar('Create Category Success', { variant: 'success' })
+            navigate(`/${Routes.CATEGORY}`)
+          })
+          .catch((_err) => {
+            console.error(`[ERROR - CREATE] [category]: >>`, _err)
+          })
       })
       .catch((err) => {
-        console.error(`[ERROR - CREATE] [category]: >>`, err)
+        console.error(`[ERROR - CREATE] [images]: >>`, err)
       })
   }
 
   return (
     <FormWrapper
+      isLoading={createLoading}
       openBottomAction
       actionTxt='Create'
       handleAction={handleSubmit}
