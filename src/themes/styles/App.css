@@ -4,3 +4,23 @@
   height: 100vh;
   overflow: hidden;
 }
+
+.image__upload {
+  cursor: pointer;
+  width: 100%;
+}
+
+.image__upload.hasImage {
+  width: auto;
+}
+
+.image__upload > input {
+  display: none;
+}
+
+.image__upload--preview {
+  border-radius: 8px;
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+}
