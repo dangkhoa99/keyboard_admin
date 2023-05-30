@@ -34,16 +34,14 @@ const UploadImages = ({
         flexWrap='wrap'
         sx={{ height: '100%' }}>
         {hasImage &&
-          links.map((item) => {
-            return (
-              <ImagePreview
-                key={`image-preview-${item.id}`}
-                disabled={disabled}
-                link={item.link}
-                onDelete={() => onDelete?.(item.id)}
-              />
-            )
-          })}
+          links.map((item) => (
+            <ImagePreview
+              key={`image-preview-${item.id}`}
+              disabled={disabled}
+              link={item.link}
+              onDelete={() => onDelete?.(item.id)}
+            />
+          ))}
 
         <label className={`image__upload ${hasImage && 'hasImage'}`}>
           <input
