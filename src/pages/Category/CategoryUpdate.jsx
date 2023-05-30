@@ -89,7 +89,7 @@ const CategoryUpdate = () => {
           'Content-Type': 'multipart/form-data',
           Authorization: `${token?.type} ${token?.value}`,
         },
-        url: `${BASE_URL}/${RestEndpoints.IMAGE}`,
+        url: `${BASE_URL}/${RestEndpoints.UPLOAD_IMAGE}`,
         data: formData,
       })
         .then((res) => {

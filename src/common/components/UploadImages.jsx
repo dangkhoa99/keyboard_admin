@@ -49,7 +49,7 @@ const UploadImages = ({
           <input
             multiple={!isSingle}
             type='file'
-            accept='image/*'
+            accept='image/png, image/jpeg, image/jpg'
             onChange={onChange}
           />
           {hasImage ? (
@@ -95,7 +95,7 @@ const UploadImages = ({
                   fontSize: '14px',
                   fontWeight: '600',
                 }}>
-                Maximum file size: 500KB
+                Only JPEG, JPG and PNG file(s) with max size of 500 KB
               </Typography>
             </Grid>
           )}

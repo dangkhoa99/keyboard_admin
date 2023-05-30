@@ -20,6 +20,8 @@ export const RestEndpoints = {
   CATEGORY: 'categories',
   ORDER: 'orders',
   IMAGE: 'images',
+  UPLOAD_IMAGE: 'images/uploadImage',
+  UPLOAD_IMAGES: 'images/uploadImages',
 }
 
 export const Statuses = {
