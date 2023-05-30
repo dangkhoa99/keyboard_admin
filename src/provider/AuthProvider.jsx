@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
 
   const [authenticated, setAuthenticated] = useState(() => loadLS('token'))
 
-  const login = (data) => {
+  const login = (data, setError = undefined) => {
     axios({
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
         }
       })
       .catch((err) => {
-        console.error('Login: ', err)
+        setError(err.response.data.message || 'Login Failed')
       })
   }
 

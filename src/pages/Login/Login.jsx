@@ -8,6 +8,7 @@ import {
   IconButton,
   InputAdornment,
   Tooltip,
+  Alert,
 } from '@mui/material'
 import { useCallback, useState } from 'react'
 import Visibility from '@mui/icons-material/Visibility'
@@ -18,12 +19,14 @@ const Login = () => {
 
   const [isShowPassword, setIsShowPassword] = useState(false)
   const [formValue, setFormValue] = useState({ username: '', password: '' })
+  const [error, setError] = useState('')
 
   const toggleShowPassword = useCallback(() => {
     setIsShowPassword(!isShowPassword)
   }, [isShowPassword])
 
   const onFormChangeValue = useCallback((key, value) => {
+    setError(undefined)
     setFormValue((prev) => ({
       ...prev,
       [key]: value,
@@ -31,7 +34,12 @@ const Login = () => {
   }, [])
 
   const handleLogin = useCallback(() => {
-    login(formValue)
+    if (!formValue.username || !formValue.password) {
+      setError('Please enter username and password')
+      return
+    }
+
+    login(formValue, setError)
   }, [formValue, login])
 
   const handlePressEnter = useCallback(
@@ -54,6 +62,12 @@ const Login = () => {
           {`Khoa's Store - Admin`}
         </Typography>
       </Grid>
+
+      {error && (
+        <Grid item xs={12}>
+          <Alert severity='error'>{error}</Alert>
+        </Grid>
+      )}
 
       <Grid item xs={12}>
         <TextField
