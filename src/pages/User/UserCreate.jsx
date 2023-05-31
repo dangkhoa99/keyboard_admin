@@ -5,7 +5,7 @@ import {
   Routes,
   defaultUserFormValue,
 } from '@/common/constants'
-import { loadLS, convertDataToPayload } from '@/utils'
+import { convertDataToPayload, loadLS } from '@/utils'
 import { Grid, Typography } from '@mui/material'
 import axios from 'axios'
 import { useSnackbar } from 'notistack'
@@ -22,6 +22,7 @@ const UserCreate = () => {
   const [error, setError] = useState('')
 
   const onFormValueChange = useCallback((key, value) => {
+    setError(undefined)
     switch (key) {
       default:
         setFormValue((prev) => ({
@@ -32,14 +33,27 @@ const UserCreate = () => {
     }
   }, [])
 
-  const clearFormValue = useCallback(() => {
-    setFormValue(defaultUserFormValue)
-  }, [])
-
   const handleSubmit = () => {
     // Validation form
+    if (!formValue.username) {
+      setError('Username is required')
+      return
+    }
 
-    // console.log('[Submit] User: >>', formValue)
+    if (!formValue.password) {
+      setError('Password is required')
+      return
+    }
+
+    if (!formValue.name) {
+      setError('Name is required')
+      return
+    }
+
+    if (!formValue.role) {
+      setError('Role is required')
+      return
+    }
 
     const token = loadLS('token')
 
@@ -58,16 +72,16 @@ const UserCreate = () => {
       url: `${BASE_URL}/${RestEndpoints.USER}`,
       data: convertDataToPayload(formValue),
     })
-      .then((res) => {
+      .then(() => {
         // console.log(`[CREATE] [User]: >>`, res.data)
 
         setCreateLoading(false)
         enqueueSnackbar('Create User Success', { variant: 'success' })
-        clearFormValue()
         navigate(`/${Routes.USER}`)
       })
       .catch((err) => {
         console.error(`[ERROR - CREATE] [User]: >>`, err)
+        setError(err?.response?.data?.message || 'Create User Failed')
       })
   }
 

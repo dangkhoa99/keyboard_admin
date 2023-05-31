@@ -1,21 +1,13 @@
 import Table from '@/common/components/Table'
 import { RestEndpoints, RolesColor } from '@/common/constants'
-import { Box, Chip, Typography } from '@mui/material'
+import { Chip, Typography } from '@mui/material'
 import { useMemo } from 'react'
 
 const User = () => {
   const columns = useMemo(
     () => [
-      {
-        accessorKey: 'username',
-        header: 'Username',
-        size: 160,
-      },
-      {
-        accessorKey: 'name',
-        header: 'Name',
-        size: 160,
-      },
+      { accessorKey: 'username', header: 'Username', size: 160 },
+      { accessorKey: 'name', header: 'Name', size: 160 },
       {
         accessorKey: 'email',
         header: 'Email',

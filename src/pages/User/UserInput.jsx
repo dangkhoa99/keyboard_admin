@@ -1,4 +1,8 @@
+import { GenderArr, RoleArr } from '@/common/constants'
+import Visibility from '@mui/icons-material/Visibility'
+import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import {
+  Alert,
   Autocomplete,
   Box,
   Grid,
@@ -8,9 +12,6 @@ import {
   Tooltip,
 } from '@mui/material'
 import { memo, useCallback, useMemo, useState } from 'react'
-import Visibility from '@mui/icons-material/Visibility'
-import VisibilityOff from '@mui/icons-material/VisibilityOff'
-import { GenderArr, RoleArr } from '@/common/constants'
 
 const UserInput = ({
   formValue,
@@ -39,6 +40,12 @@ const UserInput = ({
   return (
     <Box sx={{ width: '75%', m: '0 auto' }}>
       <Grid container spacing={2}>
+        {error && (
+          <Grid item xs={12}>
+            <Alert severity='error'>{error}</Alert>
+          </Grid>
+        )}
+
         <Grid item xs={4}>
           <TextField
             fullWidth

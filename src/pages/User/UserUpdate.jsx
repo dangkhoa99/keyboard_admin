@@ -11,7 +11,7 @@ import { diffObject } from '@/utils/diffObject'
 import { Grid, Typography } from '@mui/material'
 import axios from 'axios'
 import { useSnackbar } from 'notistack'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import UserInput from './UserInput'
 
@@ -19,13 +19,17 @@ const UserUpdate = () => {
   const { enqueueSnackbar } = useSnackbar()
   const { id } = useParams()
   const navigate = useNavigate()
+  const token = useMemo(() => loadLS('token'), [])
 
   const [originalFormValue, setOriginalFormValue] =
     useState(defaultUserFormValue)
   const [formValue, setFormValue] = useState(defaultUserFormValue)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const onFormValueChange = useCallback((key, value) => {
+    setError(undefined)
+
     switch (key) {
       default:
         setFormValue((prev) => ({
@@ -38,8 +42,10 @@ const UserUpdate = () => {
 
   const handleSubmit = () => {
     // Validation form
-
-    const token = loadLS('token')
+    if (!formValue.name) {
+      setError('Name is required')
+      return
+    }
 
     if (!token) {
       return
@@ -72,12 +78,11 @@ const UserUpdate = () => {
       .catch((err) => {
         setIsLoading(false)
         console.error(`[ERROR - UPDATE] [user]: >>`, err)
+        setError(err?.response?.data?.message || 'Update User Failed')
       })
   }
 
   useEffect(() => {
-    const token = loadLS('token')
-
     if (!token) {
       return
     }
@@ -100,10 +105,11 @@ const UserUpdate = () => {
       })
       .catch((err) => {
         console.error(`[ERROR - GET ID] [User]: >>`, err)
+        setError(err?.response?.data?.message || 'Get User Failed')
       })
 
     return () => {}
-  }, [id])
+  }, [id, token])
 
   if (isLoading) {
     return <Loading />
@@ -132,6 +138,7 @@ const UserUpdate = () => {
             formValue={formValue}
             onFormValueChange={onFormValueChange}
             isLoading={isLoading}
+            error={error}
           />
         </Grid>
       </Grid>
