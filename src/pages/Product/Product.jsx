@@ -1,13 +1,22 @@
 import Table from '@/common/components/Table'
 import { RestEndpoints } from '@/common/constants'
-import { Box } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import { useMemo } from 'react'
 
 const Product = () => {
   const columns = useMemo(
     () => [
       { accessorKey: 'name', header: 'Name', size: 320 },
-      { accessorKey: 'description', header: 'Description', size: 320 },
+      {
+        accessorKey: 'description',
+        header: 'Description',
+        size: 320,
+        Cell: ({ cell }) => (
+          <Typography noWrap variant='inherit'>
+            {cell.getValue()}
+          </Typography>
+        ),
+      },
       {
         accessorKey: 'price',
         header: 'Price',
