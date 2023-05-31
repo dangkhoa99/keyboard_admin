@@ -1,9 +1,9 @@
 import { BASE_URL, RestEndpoints, Statuses } from '@/common/constants'
 import { loadLS } from '@/utils'
-import { Box, Grid, Paper, Skeleton, Typography } from '@mui/material'
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong'
+import { Box, Grid, Paper, Typography } from '@mui/material'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import ReceiptLongIcon from '@mui/icons-material/ReceiptLong'
 
 const Dashboard = () => {
   const [pendingOrder, setPendingOrder] = useState({

@@ -26,14 +26,12 @@ const OrderCreate = () => {
     setOrderFormValueHelper(key, value, setFormValue)
   }, [])
 
-  const clearFormValue = useCallback(() => {
-    setFormValue(defaultOrderFormValue)
-  }, [])
-
   const handleSubmit = () => {
     // Validation form
-
-    console.log('[Submit] Order: >>', formValue)
+    if (formValue.products.length === 0) {
+      setError('Add least 1 product to order')
+      return
+    }
 
     const token = loadLS('token')
 
@@ -43,10 +41,8 @@ const OrderCreate = () => {
 
     const formatData = {
       ...formValue,
-      products: formValue.products.filter((product) => product.product),
+      products: formValue.products.filter((item) => item.product),
     }
-
-    console.log('Remove product no name: >>', formatData)
 
     setCreateLoading(true)
 
@@ -60,15 +56,15 @@ const OrderCreate = () => {
       data: formatData,
     })
       .then((res) => {
-        console.log(`[CREATE] [order]: >>`, res.data)
+        // console.log(`[CREATE] [order]: >>`, res.data)
 
         setCreateLoading(false)
         enqueueSnackbar('Create Order Success', { variant: 'success' })
-        clearFormValue()
         navigate(`/${Routes.ORDER}`)
       })
       .catch((err) => {
         console.error(`[ERROR - CREATE] [order]: >>`, err)
+        setError(err?.response?.data?.message || 'Create Order Failed')
       })
   }
 

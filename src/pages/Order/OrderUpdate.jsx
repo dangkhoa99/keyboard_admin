@@ -1,3 +1,4 @@
+import BasicModal from '@/common/components/BasicModal'
 import FormWrapper from '@/common/components/FormWrapper'
 import Loading from '@/common/components/Loading'
 import {
@@ -8,27 +9,25 @@ import {
   defaultOrderFormValue,
 } from '@/common/constants'
 import { loadLS } from '@/utils'
-import { diffObject } from '@/utils/diffObject'
 import { Button, Grid, Typography } from '@mui/material'
 import axios from 'axios'
 import { useSnackbar } from 'notistack'
-import { Fragment, useCallback, useEffect, useState } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import OrderInput from './OrderInput'
-import BasicModal from '@/common/components/BasicModal'
 
 const OrderUpdate = () => {
   const { enqueueSnackbar } = useSnackbar()
   const { id } = useParams()
   const navigate = useNavigate()
+  const token = useMemo(() => loadLS('token'), [])
 
-  const [originalFormValue, setOriginalFormValue] = useState(
-    defaultOrderFormValue,
-  )
   const [formValue, setFormValue] = useState(defaultOrderFormValue)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const onFormValueChange = useCallback((key, value) => {
+    setError(undefined)
     switch (key) {
       default:
         setFormValue((prev) => ({
@@ -40,8 +39,6 @@ const OrderUpdate = () => {
   }, [])
 
   const handleChangeStatusOrder = (status) => {
-    const token = loadLS('token')
-
     if (!token) {
       return
     }
@@ -57,8 +54,8 @@ const OrderUpdate = () => {
       url: `${BASE_URL}/${RestEndpoints.ORDER}/${id}/change-status`,
       data: { status: status },
     })
-      .then((res) => {
-        console.log(`[UPDATE STATUS] [order]: >>`, res.data)
+      .then(() => {
+        // console.log(`[UPDATE STATUS] [order]: >>`, res.data)
 
         setIsLoading(false)
         enqueueSnackbar(`Update Status Order: ${status}`, {
@@ -68,12 +65,11 @@ const OrderUpdate = () => {
       })
       .catch((err) => {
         console.error(`[ERROR - UPDATE STATUS] [order]: >>`, err)
+        setError(err?.response?.data?.message)
       })
   }
 
   useEffect(() => {
-    const token = loadLS('token')
-
     if (!token) {
       return
     }
@@ -91,7 +87,6 @@ const OrderUpdate = () => {
       .then((res) => {
         // console.log(`[GET ID] [order]: >>`, res.data)
         setFormValue(res.data)
-        setOriginalFormValue(res.data)
         setIsLoading(false)
       })
       .catch((err) => {
@@ -99,7 +94,7 @@ const OrderUpdate = () => {
       })
 
     return () => {}
-  }, [id])
+  }, [id, token])
 
   if (isLoading) {
     return <Loading />
@@ -209,6 +204,7 @@ const OrderUpdate = () => {
             formValue={formValue}
             onFormValueChange={onFormValueChange}
             isLoading={isLoading}
+            error={error}
           />
         </Grid>
       </Grid>

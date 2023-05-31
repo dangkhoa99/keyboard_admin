@@ -1,4 +1,5 @@
 import FormWrapper from '@/common/components/FormWrapper'
+import Loading from '@/common/components/Loading'
 import {
   BASE_URL,
   RestEndpoints,
@@ -12,7 +13,6 @@ import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import OrderInput from './OrderInput'
-import Loading from '@/common/components/Loading'
 
 const OrderDetail = () => {
   const { id } = useParams()
@@ -39,7 +39,7 @@ const OrderDetail = () => {
       url: `${BASE_URL}/${RestEndpoints.ORDER}/${id}`,
     })
       .then((res) => {
-        console.log(`[GET ID] [order]: >>`, res.data)
+        // console.log(`[GET ID] [order]: >>`, res.data)
         setFormValue(res.data)
         setIsLoading(false)
       })

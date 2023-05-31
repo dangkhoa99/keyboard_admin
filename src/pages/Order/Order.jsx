@@ -6,11 +6,7 @@ import { useMemo } from 'react'
 const Order = () => {
   const columns = useMemo(
     () => [
-      {
-        accessorKey: 'user.name',
-        header: 'Name',
-        size: 160,
-      },
+      { accessorKey: 'user.name', header: 'Name', size: 160 },
       {
         accessorKey: 'user.email',
         header: 'Email',

@@ -1,4 +1,14 @@
 import {
+  BASE_URL,
+  RestEndpoints,
+  StatusesColor,
+  TableStyle,
+} from '@/common/constants'
+import { loadLS } from '@/utils'
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline'
+import {
+  Alert,
   Autocomplete,
   Box,
   Chip,
@@ -8,18 +18,9 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import { Fragment, memo, useEffect, useMemo, useState } from 'react'
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
-import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline'
-import { loadLS } from '@/utils'
 import axios from 'axios'
-import {
-  BASE_URL,
-  RestEndpoints,
-  StatusesColor,
-  TableStyle,
-} from '@/common/constants'
 import MaterialReactTable from 'material-react-table'
+import { Fragment, memo, useEffect, useMemo, useState } from 'react'
 
 const OrderInput = ({
   formValue,
@@ -83,7 +84,7 @@ const OrderInput = ({
       url: `${BASE_URL}/${RestEndpoints.PRODUCT}`,
     })
       .then((res) => {
-        console.log(`[GET] [product]: >>`, res.data)
+        // console.log(`[GET] [product]: >>`, res.data)
 
         setProductList({ data: res.data, isLoading: false })
       })
@@ -98,6 +99,12 @@ const OrderInput = ({
   return (
     <Box sx={{ width: '75%', m: '0 auto' }}>
       <Grid container rowSpacing={2}>
+        {error && (
+          <Grid item xs={12}>
+            <Alert severity='error'>{error}</Alert>
+          </Grid>
+        )}
+
         {(isDetail || isUpdate) && (
           <Fragment>
             <Grid item xs={12} container alignItems='center'>
