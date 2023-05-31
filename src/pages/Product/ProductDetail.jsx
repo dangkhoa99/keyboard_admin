@@ -1,4 +1,5 @@
 import FormWrapper from '@/common/components/FormWrapper'
+import Loading from '@/common/components/Loading'
 import {
   BASE_URL,
   RestEndpoints,
@@ -11,7 +12,6 @@ import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import ProductInput from './ProductInput'
-import Loading from '@/common/components/Loading'
 
 const ProductDetail = () => {
   const { id } = useParams()
@@ -38,7 +38,7 @@ const ProductDetail = () => {
       url: `${BASE_URL}/${RestEndpoints.PRODUCT}/${id}`,
     })
       .then((res) => {
-        console.log(`[GET ID] [product]: >>`, res.data)
+        // console.log(`[GET ID] [product]: >>`, res.data)
         setFormValue({
           ...res.data,
           previewImages:

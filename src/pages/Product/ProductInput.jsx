@@ -1,7 +1,14 @@
 import UploadImages from '@/common/components/UploadImages'
 import { BASE_URL, RestEndpoints } from '@/common/constants'
 import { loadLS } from '@/utils'
-import { Autocomplete, Box, Grid, TextField, Typography } from '@mui/material'
+import {
+  Alert,
+  Autocomplete,
+  Box,
+  Grid,
+  TextField,
+  Typography,
+} from '@mui/material'
 import axios from 'axios'
 import { memo, useEffect, useMemo, useState } from 'react'
 
@@ -55,6 +62,12 @@ const ProductInput = ({
   return (
     <Box sx={{ width: '75%', m: '0 auto' }}>
       <Grid container rowSpacing={2}>
+        {error && (
+          <Grid item xs={12}>
+            <Alert severity='error'>{error}</Alert>
+          </Grid>
+        )}
+
         <Grid item xs={12}>
           <TextField
             fullWidth
@@ -120,8 +133,8 @@ const ProductInput = ({
             multiline
             minRows={5}
             size='medium'
-            label='Desciption'
-            placeholder='Enter Desciption'
+            label='Description'
+            placeholder='Enter Description'
             value={formValue.description}
             onChange={(e) => onFormValueChange('description', e.target.value)}
             InputProps={{ readOnly: isDetail }}

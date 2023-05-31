@@ -22,13 +22,21 @@ const ProductCreate = () => {
   const [error, setError] = useState('')
 
   const onFormValueChange = useCallback((key, value) => {
+    setError(undefined)
     setProductFormValueHelper(key, value, setFormValue)
   }, [])
 
   const handleSubmit = () => {
     // Validation form
+    if (!formValue.name) {
+      setError('Name is required')
+      return
+    }
 
-    console.log('[Submit] Product: >>', formValue)
+    if (!formValue.category) {
+      setError('Category is required')
+      return
+    }
 
     const token = loadLS('token')
 
@@ -50,8 +58,8 @@ const ProductCreate = () => {
         url: `${BASE_URL}/${RestEndpoints.PRODUCT}`,
         data: other,
       })
-        .then((res) => {
-          console.log(`[CREATE] [product]: >>`, res.data)
+        .then(() => {
+          // console.log(`[CREATE] [product]: >>`, res.data)
 
           setCreateLoading(false)
           enqueueSnackbar('Create Product Success', { variant: 'success' })
@@ -59,6 +67,7 @@ const ProductCreate = () => {
         })
         .catch((err) => {
           console.error(`[ERROR - CREATE] [product]: >>`, err)
+          setError(err?.response?.data?.message || 'Something went wrong')
         })
 
       return
@@ -72,7 +81,7 @@ const ProductCreate = () => {
     // console.log('[validateImages]: ', validateImages)
 
     if (!validateImages) {
-      setError('Invalid File Size. Maximum file size is 500KB.')
+      setError('Image size must be less than 500KB')
       return
     }
 
@@ -101,7 +110,7 @@ const ProductCreate = () => {
           images: res.data.map((item) => item),
         }
 
-        console.log('[data]: ', data)
+        // console.log('[data]: ', data)
 
         axios({
           method: 'post',
@@ -112,8 +121,8 @@ const ProductCreate = () => {
           url: `${BASE_URL}/${RestEndpoints.PRODUCT}`,
           data,
         })
-          .then((_res) => {
-            console.log(`[CREATE] [product]: >>`, _res.data)
+          .then(() => {
+            // console.log(`[CREATE] [product]: >>`, _res.data)
 
             setCreateLoading(false)
             enqueueSnackbar('Create Product Success', { variant: 'success' })
@@ -121,10 +130,12 @@ const ProductCreate = () => {
           })
           .catch((_err) => {
             console.error(`[ERROR - CREATE] [product]: >>`, _err)
+            setError(_err?.response?.data?.message || 'Something went wrong')
           })
       })
       .catch((err) => {
         console.error(`[ERROR - CREATE] [images]: >>`, err)
+        setError(err?.response?.data?.message || 'Something went wrong')
       })
   }
 

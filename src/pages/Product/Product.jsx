@@ -6,16 +6,8 @@ import { useMemo } from 'react'
 const Product = () => {
   const columns = useMemo(
     () => [
-      {
-        accessorKey: 'name',
-        header: 'Name',
-        size: 320,
-      },
-      {
-        accessorKey: 'description',
-        header: 'Description',
-        size: 320,
-      },
+      { accessorKey: 'name', header: 'Name', size: 320 },
+      { accessorKey: 'description', header: 'Description', size: 320 },
       {
         accessorKey: 'price',
         header: 'Price',
@@ -46,11 +38,7 @@ const Product = () => {
           </Box>
         ),
       },
-      {
-        accessorKey: 'category.name',
-        header: 'Category',
-        size: 160,
-      },
+      { accessorKey: 'category.name', header: 'Category', size: 160 },
     ],
     [],
   )

@@ -7,15 +7,15 @@ import {
   defaultProductFormValue,
 } from '@/common/constants'
 import {
-  loadLS,
   diffObject,
+  loadLS,
   setProductFormValueHelper,
   validateFileSize,
 } from '@/utils'
 import { Grid, Typography } from '@mui/material'
 import axios from 'axios'
 import { useSnackbar } from 'notistack'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import ProductInput from './ProductInput'
 
@@ -23,21 +23,31 @@ const ProductUpdate = () => {
   const { enqueueSnackbar } = useSnackbar()
   const { id } = useParams()
   const navigate = useNavigate()
+  const token = useMemo(() => loadLS('token'), [])
 
   const [originalFormValue, setOriginalFormValue] = useState(
     defaultProductFormValue,
   )
   const [formValue, setFormValue] = useState(defaultProductFormValue)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const onFormValueChange = useCallback((key, value) => {
+    setError(undefined)
     setProductFormValueHelper(key, value, setFormValue)
   }, [])
 
   const handleSubmit = () => {
     // Validation form
+    if (!formValue.name) {
+      setError('Name is required')
+      return
+    }
 
-    const token = loadLS('token')
+    if (!formValue.category) {
+      setError('Category is required')
+      return
+    }
 
     if (!token) {
       return
@@ -74,6 +84,7 @@ const ProductUpdate = () => {
         })
         .catch((_err) => {
           console.error(`[ERROR - UPDATE] [product]: >>`, _err)
+          setError(_err?.response?.data?.message)
         })
       return
     }
@@ -85,7 +96,7 @@ const ProductUpdate = () => {
       )
 
       if (!validateImages) {
-        console.error('Invalid File Size. Maximum file size is 500KB.')
+        setError('Image size must be less than 500KB')
         return
       }
 
@@ -119,7 +130,7 @@ const ProductUpdate = () => {
             ],
           }
 
-          console.log('[data]: ', data)
+          // console.log('[data]: ', data)
 
           axios({
             method: 'patch',
@@ -130,8 +141,8 @@ const ProductUpdate = () => {
             url: `${BASE_URL}/${RestEndpoints.PRODUCT}/${id}`,
             data,
           })
-            .then((_res) => {
-              console.log(`[UPDATE] [product]: >>`, _res.data)
+            .then(() => {
+              // console.log(`[UPDATE] [product]: >>`, _res.data)
 
               setIsLoading(false)
               enqueueSnackbar('Update Product Success', {
@@ -141,10 +152,12 @@ const ProductUpdate = () => {
             })
             .catch((_err) => {
               console.error(`[ERROR - UPDATE] [product]: >>`, _err)
+              setError(_err?.response?.data?.message)
             })
         })
         .catch((err) => {
           console.error(`[ERROR - CREATE] [images]: >>`, err)
+          setError(err?.response?.data?.message)
         })
     } else {
       // Remove Image
@@ -164,8 +177,8 @@ const ProductUpdate = () => {
         url: `${BASE_URL}/${RestEndpoints.PRODUCT}/${id}`,
         data,
       })
-        .then((_res) => {
-          console.log(`[UPDATE] [product]: >>`, _res.data)
+        .then(() => {
+          // console.log(`[UPDATE] [product]: >>`, _res.data)
 
           setIsLoading(false)
           enqueueSnackbar('Update Product Success', {
@@ -175,13 +188,12 @@ const ProductUpdate = () => {
         })
         .catch((_err) => {
           console.error(`[ERROR - UPDATE] [product]: >>`, _err)
+          setError(_err?.response?.data?.message)
         })
     }
   }
 
   useEffect(() => {
-    const token = loadLS('token')
-
     if (!token) {
       return
     }
@@ -226,10 +238,11 @@ const ProductUpdate = () => {
       })
       .catch((err) => {
         console.error(`[ERROR - GET ID] [product]: >>`, err)
+        setError(err?.response?.data?.message)
       })
 
     return () => {}
-  }, [id])
+  }, [id, token])
 
   if (isLoading) {
     return <Loading />
@@ -258,6 +271,7 @@ const ProductUpdate = () => {
             formValue={formValue}
             onFormValueChange={onFormValueChange}
             isLoading={isLoading}
+            error={error}
           />
         </Grid>
       </Grid>
