@@ -5,16 +5,8 @@ import { useMemo } from 'react'
 const Category = () => {
   const columns = useMemo(
     () => [
-      {
-        accessorKey: 'name',
-        header: 'Name',
-        size: 160,
-      },
-      {
-        accessorKey: 'description',
-        header: 'Description',
-        size: 320,
-      },
+      { accessorKey: 'name', header: 'Name', size: 160 },
+      { accessorKey: 'description', header: 'Description', size: 320 },
     ],
     [],
   )

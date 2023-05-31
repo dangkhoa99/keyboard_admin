@@ -1,4 +1,5 @@
 import FormWrapper from '@/common/components/FormWrapper'
+import Loading from '@/common/components/Loading'
 import {
   BASE_URL,
   RestEndpoints,
@@ -11,7 +12,6 @@ import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import CategoryInput from './CategoryInput'
-import Loading from '@/common/components/Loading'
 
 const CategoryDetail = () => {
   const { id } = useParams()

@@ -1,5 +1,5 @@
 import UploadImages from '@/common/components/UploadImages'
-import { Box, Grid, TextField, Typography } from '@mui/material'
+import { Alert, Box, Grid, TextField, Typography } from '@mui/material'
 import { memo } from 'react'
 
 const CategoryInput = ({
@@ -13,6 +13,12 @@ const CategoryInput = ({
   return (
     <Box sx={{ width: '75%', m: '0 auto' }}>
       <Grid container rowSpacing={2}>
+        {error && (
+          <Grid item xs={12}>
+            <Alert severity='error'>{error}</Alert>
+          </Grid>
+        )}
+
         <Grid item xs={12}>
           <TextField
             fullWidth

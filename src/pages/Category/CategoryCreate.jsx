@@ -22,11 +22,16 @@ const CategoryCreate = () => {
   const [error, setError] = useState('')
 
   const onFormValueChange = useCallback((key, value) => {
+    setError(undefined)
     setCategoryFormValueHelper(key, value, setFormValue)
   }, [])
 
   const handleSubmit = () => {
     // console.log('[Submit] Category: >>', formValue)
+    if (!formValue.name) {
+      setError('Name is required')
+      return
+    }
 
     const token = loadLS('token')
 
@@ -71,7 +76,7 @@ const CategoryCreate = () => {
     // console.log('[validateImages]: ', validateImages)
 
     if (!validateImages) {
-      setError('Invalid File Size. Maximum file size is 500KB.')
+      setError('Image size must be less than 500KB')
       return
     }
 
@@ -114,11 +119,11 @@ const CategoryCreate = () => {
             navigate(`/${Routes.CATEGORY}`)
           })
           .catch((_err) => {
-            console.error(`[ERROR - CREATE] [category]: >>`, _err)
+            setError(_err.response.data.message || 'Something went wrong')
           })
       })
       .catch((err) => {
-        console.error(`[ERROR - CREATE] [images]: >>`, err)
+        setError(err.response.data.message || 'Something went wrong')
       })
   }
 

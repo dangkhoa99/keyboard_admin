@@ -7,15 +7,15 @@ import {
   defaultCategoryFormValue,
 } from '@/common/constants'
 import {
-  loadLS,
   diffObject,
+  loadLS,
   setCategoryFormValueHelper,
   validateFileSize,
 } from '@/utils'
 import { Grid, Typography } from '@mui/material'
 import axios from 'axios'
 import { useSnackbar } from 'notistack'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import CategoryInput from './CategoryInput'
 
@@ -23,21 +23,26 @@ const CategoryUpdate = () => {
   const { enqueueSnackbar } = useSnackbar()
   const { id } = useParams()
   const navigate = useNavigate()
+  const token = useMemo(() => loadLS('token'), [])
 
   const [originalFormValue, setOriginalFormValue] = useState(
     defaultCategoryFormValue,
   )
   const [formValue, setFormValue] = useState(defaultCategoryFormValue)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const onFormValueChange = useCallback((key, value) => {
+    setError(undefined)
     setCategoryFormValueHelper(key, value, setFormValue)
   }, [])
 
   const handleSubmit = () => {
     // Validation form
-
-    const token = loadLS('token')
+    if (!formValue.name) {
+      setError('Name is required')
+      return
+    }
 
     if (!token) {
       return
@@ -74,7 +79,7 @@ const CategoryUpdate = () => {
           navigate(`/${Routes.CATEGORY}`)
         })
         .catch((_err) => {
-          console.error(`[ERROR - UPDATE] [category]: >>`, _err)
+          setError(_err?.response?.data?.message)
         })
       return
     }
@@ -86,7 +91,7 @@ const CategoryUpdate = () => {
       )
 
       if (!validateImages) {
-        console.error('Invalid File Size. Maximum file size is 500KB.')
+        setError('Image size must be less than 500KB')
         return
       }
 
@@ -132,11 +137,11 @@ const CategoryUpdate = () => {
               navigate(`/${Routes.CATEGORY}`)
             })
             .catch((_err) => {
-              console.error(`[ERROR - UPDATE] [category]: >>`, _err)
+              setError(_err?.response?.data?.message)
             })
         })
         .catch((err) => {
-          console.error(`[ERROR - CREATE] [images]: >>`, err)
+          setError(err?.response?.data?.message)
         })
     } else {
       // Remove Image
@@ -166,14 +171,12 @@ const CategoryUpdate = () => {
           navigate(`/${Routes.CATEGORY}`)
         })
         .catch((_err) => {
-          console.error(`[ERROR - UPDATE] [category]: >>`, _err)
+          setError(_err?.response?.data?.message)
         })
     }
   }
 
   useEffect(() => {
-    const token = loadLS('token')
-
     if (!token) {
       return
     }
@@ -217,11 +220,12 @@ const CategoryUpdate = () => {
         setIsLoading(false)
       })
       .catch((err) => {
-        console.error(`[ERROR - GET ID] [category]: >>`, err)
+        setIsLoading(false)
+        setError(err.response?.data?.message || 'Error')
       })
 
     return () => {}
-  }, [id])
+  }, [id, token])
 
   if (isLoading) {
     return <Loading />
@@ -250,6 +254,7 @@ const CategoryUpdate = () => {
             formValue={formValue}
             onFormValueChange={onFormValueChange}
             isLoading={isLoading}
+            error={error}
           />
         </Grid>
       </Grid>
