@@ -126,10 +126,12 @@ const Table = ({
         enableStickyHeader
         enableStickyFooter
         enablePinning
+        enableFilterMatchHighlighting
         initialState={{ density: 'comfortable' }}
         state={{ isLoading: data.isLoading, rowSelection }}
         onRowSelectionChange={setRowSelection}
         positionToolbarAlertBanner='bottom'
+        globalFilterFn='contains'
         renderRowActions={({ row, table }) => (
           <Box
             sx={{
