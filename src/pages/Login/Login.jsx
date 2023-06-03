@@ -58,7 +58,7 @@ const Login = () => {
       gap={4}
       sx={{ height: '100%', width: '550px', m: '0 auto' }}>
       <Grid item xs={12}>
-        <Typography variant='h3' fontWeight='900'>
+        <Typography variant='h4' fontWeight='900'>
           {`Khoa's Store - Admin`}
         </Typography>
       </Grid>
