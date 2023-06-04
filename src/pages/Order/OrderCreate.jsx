@@ -55,10 +55,9 @@ const OrderCreate = () => {
       url: `${BASE_URL}/${RestEndpoints.ORDER}`,
       data: formatData,
     })
-      .then((res) => {
+      .then(() => {
         // console.log(`[CREATE] [order]: >>`, res.data)
 
-        setCreateLoading(false)
         enqueueSnackbar('Create Order Success', { variant: 'success' })
         navigate(`/${Routes.ORDER}`)
       })
@@ -66,6 +65,8 @@ const OrderCreate = () => {
         console.error(`[ERROR - CREATE] [order]: >>`, err)
         setError(err?.response?.data?.message || 'Create Order Failed')
       })
+
+    setCreateLoading(false)
   }
 
   return (

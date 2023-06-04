@@ -75,7 +75,6 @@ const UserCreate = () => {
       .then(() => {
         // console.log(`[CREATE] [User]: >>`, res.data)
 
-        setCreateLoading(false)
         enqueueSnackbar('Create User Success', { variant: 'success' })
         navigate(`/${Routes.USER}`)
       })
@@ -83,6 +82,8 @@ const UserCreate = () => {
         console.error(`[ERROR - CREATE] [User]: >>`, err)
         setError(err?.response?.data?.message || 'Create User Failed')
       })
+
+    setCreateLoading(false)
   }
 
   return (

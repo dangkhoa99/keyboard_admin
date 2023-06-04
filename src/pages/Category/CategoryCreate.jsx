@@ -57,13 +57,13 @@ const CategoryCreate = () => {
         .then(() => {
           // console.log(`[CREATE] [category]: >>`, res.data)
 
-          setCreateLoading(false)
           enqueueSnackbar('Create Category Success', { variant: 'success' })
           navigate(`/${Routes.CATEGORY}`)
         })
         .catch((err) => {
           console.error(`[ERROR - CREATE] [category]: >>`, err)
         })
+      setCreateLoading(false)
 
       return
     }
@@ -114,7 +114,6 @@ const CategoryCreate = () => {
           .then(() => {
             // console.log(`[CREATE] [category]: >>`, _res.data)
 
-            setCreateLoading(false)
             enqueueSnackbar('Create Category Success', { variant: 'success' })
             navigate(`/${Routes.CATEGORY}`)
           })
@@ -125,6 +124,7 @@ const CategoryCreate = () => {
       .catch((err) => {
         setError(err.response.data.message || 'Something went wrong')
       })
+    setCreateLoading(false)
   }
 
   return (

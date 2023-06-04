@@ -60,6 +60,8 @@ const CategoryUpdate = () => {
 
     if (!diff.imageFile) {
       // Not Change/Remove Image
+      setIsLoading(true)
+
       axios({
         method: 'patch',
         headers: {
@@ -72,7 +74,6 @@ const CategoryUpdate = () => {
         .then(() => {
           // console.log(`[UPDATE] [category]: >>`, _res.data)
 
-          setIsLoading(false)
           enqueueSnackbar('Update Category Success', {
             variant: 'success',
           })
@@ -81,6 +82,8 @@ const CategoryUpdate = () => {
         .catch((_err) => {
           setError(_err?.response?.data?.message)
         })
+      setIsLoading(false)
+
       return
     }
 
@@ -130,7 +133,6 @@ const CategoryUpdate = () => {
             .then(() => {
               // console.log(`[UPDATE] [category]: >>`, _res.data)
 
-              setIsLoading(false)
               enqueueSnackbar('Update Category Success', {
                 variant: 'success',
               })
@@ -143,6 +145,7 @@ const CategoryUpdate = () => {
         .catch((err) => {
           setError(err?.response?.data?.message)
         })
+      setIsLoading(false)
     } else {
       // Remove Image
       const { imageFile, previewImage, ...other } = diff
@@ -151,6 +154,8 @@ const CategoryUpdate = () => {
         ...other,
         image: null,
       }
+
+      setIsLoading(true)
 
       axios({
         method: 'patch',
@@ -164,7 +169,6 @@ const CategoryUpdate = () => {
         .then(() => {
           // console.log(`[UPDATE] [category]: >>`, _res.data)
 
-          setIsLoading(false)
           enqueueSnackbar('Update Category Success', {
             variant: 'success',
           })
@@ -174,6 +178,7 @@ const CategoryUpdate = () => {
           setError(_err?.response?.data?.message)
         })
     }
+    setIsLoading(false)
   }
 
   useEffect(() => {
@@ -217,12 +222,11 @@ const CategoryUpdate = () => {
             ? [{ ...res.data.image, id: res.data.image._id }]
             : [],
         })
-        setIsLoading(false)
       })
       .catch((err) => {
-        setIsLoading(false)
         setError(err.response?.data?.message || 'Error')
       })
+    setIsLoading(false)
 
     return () => {}
   }, [id, token])

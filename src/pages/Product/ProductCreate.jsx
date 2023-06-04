@@ -45,9 +45,9 @@ const ProductCreate = () => {
     }
 
     if (formValue.imageFiles.length === 0) {
-      setCreateLoading(true)
-
       const { imageFiles, previewImages, ...other } = formValue
+
+      setCreateLoading(true)
 
       axios({
         method: 'post',
@@ -61,7 +61,6 @@ const ProductCreate = () => {
         .then(() => {
           // console.log(`[CREATE] [product]: >>`, res.data)
 
-          setCreateLoading(false)
           enqueueSnackbar('Create Product Success', { variant: 'success' })
           navigate(`/${Routes.PRODUCT}`)
         })
@@ -69,6 +68,8 @@ const ProductCreate = () => {
           console.error(`[ERROR - CREATE] [product]: >>`, err)
           setError(err?.response?.data?.message || 'Something went wrong')
         })
+
+      setCreateLoading(false)
 
       return
     }
@@ -124,7 +125,6 @@ const ProductCreate = () => {
           .then(() => {
             // console.log(`[CREATE] [product]: >>`, _res.data)
 
-            setCreateLoading(false)
             enqueueSnackbar('Create Product Success', { variant: 'success' })
             navigate(`/${Routes.PRODUCT}`)
           })
@@ -137,6 +137,8 @@ const ProductCreate = () => {
         console.error(`[ERROR - CREATE] [images]: >>`, err)
         setError(err?.response?.data?.message || 'Something went wrong')
       })
+
+    setCreateLoading(false)
   }
 
   return (

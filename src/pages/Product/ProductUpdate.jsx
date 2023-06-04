@@ -64,6 +64,8 @@ const ProductUpdate = () => {
 
     if (!diff.imageFiles) {
       // Not Change/Remove Image
+      setIsLoading(true)
+
       axios({
         method: 'patch',
         headers: {
@@ -76,7 +78,6 @@ const ProductUpdate = () => {
         .then(() => {
           // console.log(`[UPDATE] [product]: >>`, _res.data)
 
-          setIsLoading(false)
           enqueueSnackbar('Update Product Success', {
             variant: 'success',
           })
@@ -86,6 +87,8 @@ const ProductUpdate = () => {
           console.error(`[ERROR - UPDATE] [product]: >>`, _err)
           setError(_err?.response?.data?.message)
         })
+      setIsLoading(false)
+
       return
     }
 
@@ -144,7 +147,6 @@ const ProductUpdate = () => {
             .then(() => {
               // console.log(`[UPDATE] [product]: >>`, _res.data)
 
-              setIsLoading(false)
               enqueueSnackbar('Update Product Success', {
                 variant: 'success',
               })
@@ -159,6 +161,8 @@ const ProductUpdate = () => {
           console.error(`[ERROR - CREATE] [images]: >>`, err)
           setError(err?.response?.data?.message)
         })
+
+      setIsLoading(false)
     } else {
       // Remove Image
       const { imageFiles, previewImages, ...other } = diff
@@ -167,6 +171,8 @@ const ProductUpdate = () => {
         ...other,
         images: [],
       }
+
+      setIsLoading(true)
 
       axios({
         method: 'patch',
@@ -180,7 +186,6 @@ const ProductUpdate = () => {
         .then(() => {
           // console.log(`[UPDATE] [product]: >>`, _res.data)
 
-          setIsLoading(false)
           enqueueSnackbar('Update Product Success', {
             variant: 'success',
           })
@@ -191,6 +196,8 @@ const ProductUpdate = () => {
           setError(_err?.response?.data?.message)
         })
     }
+
+    setIsLoading(false)
   }
 
   useEffect(() => {
@@ -234,12 +241,13 @@ const ProductUpdate = () => {
             res.data?.images?.map((image) => ({ ...image, id: image._id })) ??
             [],
         })
-        setIsLoading(false)
       })
       .catch((err) => {
         console.error(`[ERROR - GET ID] [product]: >>`, err)
         setError(err?.response?.data?.message)
       })
+
+    setIsLoading(false)
 
     return () => {}
   }, [id, token])

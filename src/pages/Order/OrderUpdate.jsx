@@ -57,7 +57,6 @@ const OrderUpdate = () => {
       .then(() => {
         // console.log(`[UPDATE STATUS] [order]: >>`, res.data)
 
-        setIsLoading(false)
         enqueueSnackbar(`Update Status Order: ${status}`, {
           variant: 'success',
         })
@@ -67,6 +66,7 @@ const OrderUpdate = () => {
         console.error(`[ERROR - UPDATE STATUS] [order]: >>`, err)
         setError(err?.response?.data?.message)
       })
+    setIsLoading(false)
   }
 
   useEffect(() => {
@@ -87,11 +87,11 @@ const OrderUpdate = () => {
       .then((res) => {
         // console.log(`[GET ID] [order]: >>`, res.data)
         setFormValue(res.data)
-        setIsLoading(false)
       })
       .catch((err) => {
         console.error(`[ERROR - GET ID] [order]: >>`, err)
       })
+    setIsLoading(false)
 
     return () => {}
   }, [id, token])

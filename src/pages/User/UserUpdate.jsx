@@ -71,15 +71,15 @@ const UserUpdate = () => {
       .then(() => {
         // console.log(`[UPDATE] [user]: >>`, res.data)
 
-        setIsLoading(false)
         enqueueSnackbar('Update User Success', { variant: 'success' })
         navigate(`/${Routes.USER}`)
       })
       .catch((err) => {
-        setIsLoading(false)
         console.error(`[ERROR - UPDATE] [user]: >>`, err)
         setError(err?.response?.data?.message || 'Update User Failed')
       })
+
+    setIsLoading(false)
   }
 
   useEffect(() => {
